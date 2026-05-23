@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+<title>TikTok Money | Ativação de Carteira</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+  --tt-red: #FE2C55;
+  --tt-red2: #ff4d6d;
+  --tt-blue: #25F4EE;
+  --tt-white: #FFFFFF;
+  --tt-black: #000000;
+  --tt-gray: #111111;
+  --tt-gray2: #1a1a1a;
+  --tt-gray3: #252525;
+  --tt-gray4: #333333;
+  --tt-muted: #7a7a7a;
+  --tt-border: rgba(255,255,255,0.07);
+  --tt-border2: rgba(255,255,255,0.12);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--tt-black);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow-x: hidden;
+  font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  padding: 24px 16px;
+}
+
+/* ── TOPBAR ── */
+.tt-topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: calc(52px + var(--safe-t));
+  padding-top: var(--safe-t);
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 16px;
+  padding-right: 16px;
+  z-index: 100;
+  border-bottom: 1px solid var(--tt-border);
+}
+
+.tt-logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.tt-logo-icon {
+  width: 26px; height: 26px;
+  position: relative;
+  margin-right: 2px;
+}
+.tt-logo-icon::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: var(--tt-blue);
+  border-radius: 5px;
+  transform: translate(2px, 2px);
+  opacity: 0.7;
+}
+.tt-logo-icon::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: var(--tt-red);
+  border-radius: 5px;
+  transform: translate(-2px, -2px);
+  opacity: 0.7;
+}
+.tt-logo-icon i {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: white;
+  z-index: 1;
+}
+
+.tt-logo .r { color: var(--tt-red); }
+.tt-logo .b { color: var(--tt-blue); text-shadow: -2px 0 var(--tt-red); }
+.tt-logo .m { color: var(--tt-muted); font-size: 11px; font-weight: 600; margin-left: 1px; }
+
+/* ── BOTTOM NAV ── */
+.tt-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: calc(54px + var(--safe-b));
+  padding-bottom: var(--safe-b);
+  background: rgba(0,0,0,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--tt-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+}
+
+.nav-i {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  padding: 6px 0;
+  opacity: 0.45;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--tt-white);
+}
+.nav-i.on { opacity: 1; }
+.nav-i i { font-size: 20px; }
+
+.nav-plus-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-plus {
+  width: 46px; height: 28px;
+  border-radius: 7px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.nav-plus::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--tt-blue) 50%, var(--tt-red) 50%);
+}
+.nav-plus::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: var(--tt-white);
+  border-radius: 5px;
+}
+.nav-plus i { position: relative; z-index: 1; color: var(--tt-black); font-size: 16px; font-weight: 900; }
+
+/* Container principal */
+.wrapper {
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  z-index: 1;
+  margin-top: calc(52px + var(--safe-t));
+  margin-bottom: calc(54px + var(--safe-b));
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  animation: fadeSlideUp 0.4s ease-out;
+}
+
+.logo-mark {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--tt-gray2);
+  border: 1px solid var(--tt-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 28px;
+  backdrop-filter: blur(10px);
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.logo-text .r { color: var(--tt-red); }
+.logo-text .b { color: var(--tt-blue); }
+.logo-text .m { color: var(--tt-muted); font-size: 11px; font-weight: 600; margin-left: 1px; }
+
+/* progresso */
+.progress-wrap {
+  margin-bottom: 22px;
+  animation: fadeSlideUp 0.4s ease-out 0.05s both;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--tt-muted);
+  margin-bottom: 8px;
+}
+
+.progress {
+  width: 100%;
+  height: 3px;
+  background: var(--tt-gray3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 25%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--tt-red), var(--tt-red2));
+  transition: width .35s ease;
+}
+
+/* cartão principal - estilo TikTok */
+.card {
+  background: var(--tt-gray2);
+  border: 1px solid var(--tt-border);
+  border-radius: 14px;
+  padding: 24px 20px 28px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeSlideUp 0.4s ease-out 0.1s both;
+}
+
+.content {
+  animation: fadeStep .22s ease;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeStep {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ícone */
+.icon-box {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(254,44,85,0.15), rgba(37,244,238,0.1));
+  border: 2px solid var(--tt-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-box i {
+  font-size: 34px;
+  color: var(--tt-red);
+}
+
+/* títulos gerais */
+.title {
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 18px;
+  color: var(--tt-white);
+}
+
+.desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--tt-muted);
+  text-align: center;
+}
+
+.desc strong {
+  color: var(--tt-red);
+  font-weight: 800;
+}
+
+/* botoes gerais */
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  min-height: 56px;
+  font-size: 15px;
+  font-weight: 800;
+  transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  flex: 1;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-red {
+  background: var(--tt-red);
+  color: white;
+  box-shadow: 0 10px 22px rgba(254,44,85,0.25);
+}
+
+.btn-gray {
+  background: var(--tt-gray3);
+  border: 1px solid var(--tt-border);
+  color: var(--tt-white);
+}
+
+.btn-full {
+  width: 100%;
+  background: var(--tt-red);
+  color: white;
+  min-height: 56px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-full:active {
+  transform: scale(0.97);
+}
+
+/* aviso */
+.notice {
+  margin: 20px 0 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(254,44,85,0.3);
+  background: rgba(254,44,85,0.08);
+  text-align: center;
+  color: var(--tt-red);
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+/* step4 específico */
+.step4-title {
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 16px;
+  color: var(--tt-white);
+}
+
+.step4-desc {
+  text-align: center;
+  color: var(--tt-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.step4-desc strong {
+  color: var(--tt-red);
+}
+
+.info-box {
+  background: linear-gradient(135deg, rgba(254,44,85,0.08), rgba(37,244,238,0.05));
+  border: 1px solid rgba(254,44,85,0.2);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.info-title {
+  color: var(--tt-red);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-box p {
+  color: var(--tt-muted);
+  font-size: 13px;
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+.info-box p strong {
+  color: var(--tt-white);
+  font-weight: 800;
+}
+
+.info-box p .money-green {
+  color: #4ade80;
+  font-weight: 800;
+}
+
+.info-box p:last-child {
+  margin-bottom: 0;
+}
+
+.amount-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 12px;
+  background: var(--tt-gray2);
+  border: 1px solid var(--tt-border);
+  padding: 14px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.amount-card:hover {
+  background: var(--tt-gray3);
+  transform: translateX(3px);
+}
+
+.amount-card i {
+  font-size: 24px;
+  width: 28px;
+  text-align: center;
+}
+
+.amount-text {
+  flex: 1;
+  text-align: left;
+}
+
+.amount-label {
+  font-size: 12px;
+  color: var(--tt-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.amount-value {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: .2px;
+}
+
+.amount-value.gold {
+  color: var(--tt-red);
+}
+
+.amount-value.green {
+  color: #4ade80;
+}
+
+.amount-card.total {
+  border: 1px solid rgba(254,44,85,0.4);
+  background: rgba(254,44,85,0.08);
+}
+
+.amount-card.total .amount-label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.amount-card.total .amount-value {
+  color: var(--tt-red);
+  font-size: 19px;
+}
+
+.bottom-note {
+  margin: 8px 0 20px;
+  text-align: center;
+  color: var(--tt-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.btn-activate {
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: 6px;
+  background: var(--tt-red);
+  color: white;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: .1px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-activate:active {
+  transform: scale(0.97);
+}
+
+/* responsivo */
+@media (max-width: 480px) {
+  .wrapper { max-width: 100%; }
+  .card { padding: 20px 16px 24px; }
+  .buttons { gap: 10px; }
+  .title { font-size: 17px; }
+  .step4-title { font-size: 18px; }
+  .icon-box { width: 60px; height: 60px; }
+  .icon-box i { font-size: 28px; }
+  .logo-mark { width: 48px; height: 48px; font-size: 24px; }
+  .logo-text { font-size: 18px; }
+}
+
+@media (max-width: 380px) {
+  .card { padding: 18px 14px 22px; }
+  .title { font-size: 16px; }
+  .step4-title { font-size: 17px; }
+  .amount-value { font-size: 16px; }
+  .amount-card.total .amount-value { font-size: 17px; }
+  .btn { min-height: 52px; font-size: 14px; }
+  .btn-full { min-height: 52px; font-size: 15px; }
+  .btn-activate { min-height: 52px; font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="tt-topbar">
+    <div class="tt-logo">
+      <div class="tt-logo-icon"><i class="fab fa-tiktok"></i></div>
+      <span class="r">Tik</span><span class="b">Tok</span>
+      <span class="m">Money</span>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="tt-nav">
+    <div class="nav-i on">
+      <i class="fas fa-home"></i>
+      <span>Início</span>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-search"></i>
+      <span>Descobrir</span>
+    </div>
+    <div class="nav-plus-wrap">
+      <div class="nav-plus"><i class="fas fa-plus"></i></div>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-comment-dots"></i>
+      <span>Inbox</span>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-user"></i>
+      <span>Perfil</span>
+    </div>
+  </div>
+
+<div class="wrapper">
+
+  <div class="logo">
+    <div class="logo-text"><span class="r">Tik</span><span class="b">Tok</span> <span class="m">Money</span></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="stepText">Passo 1 de 4</span>
+      <span id="percentText">25%</span>
+    </div>
+    <div class="progress">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="content" id="content"></div>
+  </div>
+
+</div>
+
+<script>
+let step = 1;
+
+const content = document.getElementById("content");
+const progressFill = document.getElementById("progressFill");
+const stepText = document.getElementById("stepText");
+const percentText = document.getElementById("percentText");
+
+function setProgress() {
+  const percent = step * 25;
+  progressFill.style.width = percent + "%";
+  stepText.innerHTML = `Passo ${step} de 4`;
+  percentText.textContent = `${percent}%`;
+}
+
+function iconPhone() {
+  return `
+    <div class="icon-box">
+      <i class="fas fa-mobile-alt"></i>
+    </div>
+  `;
+}
+
+function iconShield() {
+  return `
+    <div class="icon-box">
+      <i class="fas fa-shield-alt"></i>
+    </div>
+  `;
+}
+
+function iconCheck() {
+  return `
+    <div class="icon-box">
+      <i class="fas fa-check-circle" style="color: #4ade80;"></i>
+    </div>
+  `;
+}
+
+function iconWallet() {
+  return `
+    <div class="icon-box">
+      <i class="fas fa-wallet"></i>
+    </div>
+  `;
+}
+
+function render() {
+  if (step === 1) {
+    content.innerHTML = `
+      ${iconPhone()}
+      <div class="title">Você já ouviu falar da Carteira E-commerce TikTok?</div>
+      <div class="buttons">
+        <button class="btn btn-red" onclick="nextStep()"><i class="fas fa-check"></i> Sim</button>
+        <button class="btn btn-gray" onclick="nextStep()"><i class="fas fa-times"></i> Não</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (step === 2) {
+    content.innerHTML = `
+      ${iconShield()}
+      <div class="title">O que é a Carteira E-commerce TikTok?</div>
+      <div class="desc">
+        <i class="fas fa-info-circle"></i> A Carteira E-commerce TikTok é o sistema oficial que permite transferir os valores ganhos pela plataforma TikTok Money directamente para a sua conta eMola ou M-Pesa em Moçambique.
+      </div>
+      <div class="notice">
+        <i class="fas fa-exclamation-triangle"></i> É essencial activar a sua carteira para poder receber os seus ganhos!
+      </div>
+      <button class="btn-full" onclick="nextStep()"><i class="fas fa-arrow-right"></i> Continuar</button>
+    `;
+    return;
+  }
+
+  if (step === 3) {
+    content.innerHTML = `
+      ${iconCheck()}
+      <div class="title">Você quer activar a Carteira E-commerce TikTok para levantar o dinheiro que ganhou?</div>
+      <div class="buttons">
+        <button class="btn btn-red" onclick="nextStep()"><i class="fas fa-check"></i> Sim</button>
+        <button class="btn btn-gray" onclick="goStep(1)"><i class="fas fa-undo"></i> Não</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (step === 4) {
+    content.innerHTML = `
+      ${iconWallet()}
+      <div class="step4-title">Active a sua Carteira TikTok</div>
+
+      <div class="step4-desc">
+        Para activar a Carteira E-commerce TikTok, é necessário pagar uma
+        <strong>taxa única de 347 Meticais.</strong>
+      </div>
+
+      <div class="info-box">
+        <div class="info-title"><i class="fas fa-bolt"></i> Não penses que estás a perder!</div>
+
+        <p>
+          Os <strong>347 MT</strong> são apenas uma taxa de activação —
+          <strong>não é um custo, é um investimento.</strong>
+          Assim que activares, todo o valor acumulado será enviado directamente para a tua conta.
+        </p>
+
+        <p>
+          Imagina: pagas <strong>347 MT</strong> e recebes
+          <span class="money-green">12 321 MT</span> de volta.
+          Isso é <span class="money-green">50x mais</span> do que investiste! 💰
+        </p>
+
+        <p>
+          <strong>Milhares de moçambicanos já activaram e receberam pelo TikTok Money. Não fiques para trás! 🚀</strong>
+        </p>
+      </div>
+
+      <div class="amount-card">
+        <i class="fas fa-chart-line" style="color: var(--tt-red);"></i>
+        <div class="amount-text">
+          <div class="amount-label">Ganhos acumulados</div>
+          <div class="amount-value gold">10 321 MT</div>
+        </div>
+      </div>
+
+      <div class="amount-card">
+        <i class="fas fa-gift" style="color: #4ade80;"></i>
+        <div class="amount-text">
+          <div class="amount-label">Bónus de primeiro utilizador</div>
+          <div class="amount-value green">+ 2 000 MT</div>
+        </div>
+      </div>
+
+      <div class="amount-card total">
+        <i class="fas fa-star" style="color: var(--tt-red);"></i>
+        <div class="amount-text">
+          <div class="amount-label">Total a receber</div>
+          <div class="amount-value">12 321 MT</div>
+        </div>
+      </div>
+
+      <div class="bottom-note">
+        <i class="fas fa-lock"></i> O valor será enviado directamente para o seu eMola ou M-Pesa após a activação.
+      </div>
+
+      <button class="btn-activate" onclick="window.location.href='https://midnightblue-raven-603831.hostingersite.com/checkouts/carteirat'"><i class="fas fa-rocket"></i> Quero Activar Agora</button>
+    `;
+  }
+}
+
+function nextStep() {
+  if (step < 4) {
+    step++;
+    setProgress();
+    render();
+  }
+}
+
+function goStep(n) {
+  step = n;
+  setProgress();
+  render();
+}
+
+setProgress();
+render();
+</script>
+
+</body>
+</html>

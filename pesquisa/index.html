@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+  <title>TikTok | Pesquisa</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --tt-red: #FE2C55;
+      --tt-red2: #ff4d6d;
+      --tt-blue: #25F4EE;
+      --tt-white: #FFFFFF;
+      --tt-black: #000000;
+      --tt-gray: #111111;
+      --tt-gray2: #1a1a1a;
+      --tt-gray3: #252525;
+      --tt-gray4: #333333;
+      --tt-muted: #7a7a7a;
+      --tt-border: rgba(255,255,255,0.07);
+      --tt-border2: rgba(255,255,255,0.12);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+    }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      background: var(--tt-black);
+      height: 100%;
+    }
+
+    body {
+      background: var(--tt-black);
+      min-height: 100dvh;
+      font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      color: var(--tt-white);
+      overflow-x: hidden;
+      overscroll-behavior: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TOPBAR ── */
+    .tt-topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: calc(52px + var(--safe-t));
+      padding-top: var(--safe-t);
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 16px;
+      padding-right: 16px;
+      z-index: 100;
+      border-bottom: 1px solid var(--tt-border);
+    }
+
+    .tt-logo {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .tt-logo-icon {
+      width: 26px; height: 26px;
+      position: relative;
+      margin-right: 2px;
+    }
+    .tt-logo-icon::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--tt-blue);
+      border-radius: 5px;
+      transform: translate(2px, 2px);
+      opacity: 0.7;
+    }
+    .tt-logo-icon::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--tt-red);
+      border-radius: 5px;
+      transform: translate(-2px, -2px);
+      opacity: 0.7;
+    }
+    .tt-logo-icon i {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      z-index: 1;
+    }
+
+    .tt-logo .r { color: var(--tt-red); }
+    .tt-logo .b { color: var(--tt-blue); text-shadow: -2px 0 var(--tt-red); }
+    .tt-logo .m { color: var(--tt-muted); font-size: 11px; font-weight: 600; margin-left: 1px; }
+
+    /* ── BOTTOM NAV ── */
+    .tt-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: calc(54px + var(--safe-b));
+      padding-bottom: var(--safe-b);
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--tt-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+    }
+
+    .nav-i {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+      padding: 6px 0;
+      opacity: 0.45;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      color: var(--tt-white);
+    }
+    .nav-i.on { opacity: 1; }
+    .nav-i i { font-size: 20px; }
+
+    .nav-plus-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .nav-plus {
+      width: 46px; height: 28px;
+      border-radius: 7px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .nav-plus::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, var(--tt-blue) 50%, var(--tt-red) 50%);
+    }
+    .nav-plus::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: var(--tt-white);
+      border-radius: 5px;
+    }
+    .nav-plus i { position: relative; z-index: 1; color: var(--tt-black); font-size: 16px; font-weight: 900; }
+
+    /* ── CONTENT COM SCROLL ── */
+    .tt-content {
+      position: relative;
+      padding-top: calc(52px + var(--safe-t));
+      padding-bottom: calc(54px + var(--safe-b));
+      min-height: 100dvh;
+      height: 100dvh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .page {
+      padding: 14px 15px 24px;
+    }
+
+    /* ── PAGE TRANSITION ── */
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.99); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .page-animate { animation: pageIn 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+
+    /* ── USER BAR ── */
+    .u-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0 14px;
+      margin-bottom: 4px;
+    }
+
+    .u-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--tt-red), #ff7b7b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 2px var(--tt-black), 0 0 0 3.5px var(--tt-red);
+    }
+
+    .u-name { font-size: 13px; font-weight: 800; line-height: 1.2; }
+    .u-tag { font-size: 11px; color: var(--tt-muted); }
+
+    .u-follow {
+      margin-left: auto;
+      background: var(--tt-red);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.1px;
+    }
+
+    /* ── CARDS ESTILO TIKTOK ── */
+    .card {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 14px;
+      padding: 20px 18px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-title {
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+      text-align: center;
+    }
+    .hero-title .hl { color: var(--tt-red); }
+
+    .hero-subtitle {
+      text-align: center;
+      color: var(--tt-muted);
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .hero-text {
+      text-align: center;
+      color: var(--tt-muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: var(--tt-gray3);
+      border-radius: 10px;
+      padding: 12px 6px;
+      text-align: center;
+      border: 1px solid var(--tt-border);
+    }
+    .stat-icon i { color: var(--tt-red); font-size: 20px; margin-bottom: 8px; display: inline-block; }
+    .stat-number { font-size: 17px; font-weight: 900; color: var(--tt-white); }
+    .stat-label { font-size: 9px; color: var(--tt-muted); margin-top: 2px; font-weight: 600; text-transform: uppercase; }
+
+    /* ── CTA ── */
+    .cta-btn {
+      width: 100%;
+      border: none;
+      background: var(--tt-red);
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 6px;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 52px;
+      transition: all 0.2s ease;
+    }
+    .cta-btn:active { filter: brightness(0.88); transform: scale(0.99); }
+
+    .hero-footnote {
+      text-align: center;
+      font-size: 10px;
+      color: var(--tt-muted);
+      margin-top: 20px;
+    }
+
+    /* ── PROGRESS ── */
+    .prog-wrap { margin-bottom: 16px; }
+    .prog-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .prog-lbl { font-size: 12px; color: var(--tt-muted); font-weight: 600; }
+    .prog-status { color: var(--tt-red); font-weight: 800; font-size: 12px; }
+
+    .prog-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--tt-gray3);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--tt-red), var(--tt-red2));
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── QUESTION CARD ── */
+    .q-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(254,44,85,0.12);
+      border: 1px solid rgba(254,44,85,0.25);
+      color: var(--tt-red);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    .question-card {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 14px;
+      padding: 18px 16px;
+      margin-bottom: 16px;
+    }
+
+    .question-text {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--tt-white);
+      text-align: left;
+    }
+
+    /* ── OPTIONS ── */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+
+    .option {
+      width: 100%;
+      background: var(--tt-gray2);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 12px;
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--tt-white);
+      cursor: pointer;
+      text-align: left;
+      min-height: 52px;
+      transition: all 0.2s ease;
+    }
+
+    .option:active { transform: scale(0.98); }
+
+    .option.selected {
+      border-color: var(--tt-red);
+      background: rgba(254,44,85,0.07);
+    }
+
+    .option-letter {
+      width: 26px; height: 26px;
+      background: var(--tt-gray3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--tt-muted);
+      flex-shrink: 0;
+    }
+
+    .option.selected .option-letter {
+      background: var(--tt-red);
+      color: white;
+    }
+
+    .option-text { flex: 1; }
+
+    /* ── BUTTON NEXT ── */
+    .btn-next {
+      width: 100%;
+      border: none;
+      background: var(--tt-gray3);
+      color: var(--tt-muted);
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 16px;
+      cursor: not-allowed;
+      transition: all 0.2s ease;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-next.active {
+      background: var(--tt-red);
+      color: white;
+      cursor: pointer;
+    }
+
+    .btn-next.active:active { filter: brightness(0.88); transform: scale(0.99); }
+
+    /* ── PROCESSING ── */
+    .proc-wrap {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .proc-ring-outer {
+      width: 88px; height: 88px;
+      margin: 0 auto 22px;
+      position: relative;
+    }
+
+    .proc-ring {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      border: 3px solid var(--tt-gray3);
+      border-top-color: var(--tt-red);
+      border-right-color: rgba(254,44,85,0.3);
+      animation: spin 0.75s linear infinite;
+      position: absolute;
+      inset: 0;
+    }
+    .proc-ring2 {
+      width: 66px; height: 66px;
+      border-radius: 50%;
+      border: 2px solid var(--tt-gray3);
+      border-bottom-color: var(--tt-blue);
+      animation: spin 1.2s linear infinite reverse;
+      position: absolute;
+      top: 11px; left: 11px;
+    }
+    .proc-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .proc-title { font-size: 20px; font-weight: 900; margin-bottom: 5px; }
+    .proc-sub { font-size: 12px; color: var(--tt-muted); margin-bottom: 24px; }
+
+    .status-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .st-item {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--tt-muted);
+      font-weight: 600;
+      transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+      animation: stIn 0.4s ease both;
+    }
+    .st-item:nth-child(1) { animation-delay: 0.05s; }
+    .st-item:nth-child(2) { animation-delay: 0.12s; }
+    .st-item:nth-child(3) { animation-delay: 0.19s; }
+    .st-item:nth-child(4) { animation-delay: 0.26s; }
+
+    @keyframes stIn {
+      from { opacity:0; transform: translateX(-12px); }
+      to   { opacity:1; transform: translateX(0); }
+    }
+
+    .st-item.ok { border-color: rgba(37,244,238,0.3); background: rgba(37,244,238,0.05); color: var(--tt-blue); }
+    .st-item.running { border-color: rgba(254,44,85,0.3); background: rgba(254,44,85,0.05); color: var(--tt-red); }
+
+    .st-left { display: flex; align-items: center; gap: 10px; }
+    .st-right { font-size: 14px; }
+
+    /* ── RESULT ── */
+    .result-icon {
+      width: 70px; height: 70px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, rgba(254,44,85,0.15), rgba(37,244,238,0.1));
+      border: 2px solid var(--tt-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--tt-red);
+    }
+
+    .result-title {
+      font-size: 24px;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .result-title .r { color: var(--tt-red); }
+
+    .result-sub {
+      text-align: center;
+      color: var(--tt-muted);
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, rgba(254,44,85,0.08), rgba(37,244,238,0.05));
+      border: 1px solid rgba(254,44,85,0.2);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .info-title {
+      color: var(--tt-red);
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .info-text {
+      color: var(--tt-muted);
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .info-text strong { color: var(--tt-red); }
+
+    .thanks-text {
+      text-align: center;
+      color: var(--tt-muted);
+      font-size: 13px;
+      margin-bottom: 20px;
+      padding: 12px;
+      background: var(--tt-gray2);
+      border-radius: 12px;
+    }
+
+    .result-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-primary-link, .btn-secondary {
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary-link {
+      background: var(--tt-red);
+      color: white;
+    }
+
+    .btn-primary-link:active { filter: brightness(0.88); transform: scale(0.99); }
+
+    .btn-secondary {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      color: var(--tt-white);
+    }
+
+    .btn-secondary:active { filter: brightness(0.88); transform: scale(0.99); }
+
+    .footer-note {
+      text-align: center;
+      font-size: 10px;
+      color: var(--tt-muted);
+    }
+
+    /* Responsivo */
+    @media (max-width: 480px) {
+      .page { padding: 12px; }
+      .hero-title { font-size: 22px; }
+      .question-text { font-size: 15px; }
+      .option { font-size: 12px; padding: 10px 12px; }
+      .option-letter { width: 24px; height: 24px; font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="tt-topbar">
+    <div class="tt-logo">
+      <div class="tt-logo-icon"><i class="fab fa-tiktok"></i></div>
+      <span class="r">Tik</span><span class="b">Tok</span>
+      <span class="m">Pesquisa</span>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="tt-content">
+    <div class="page" id="app"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="tt-nav">
+    <div class="nav-i on">
+      <i class="fas fa-home"></i>
+      <span>Início</span>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-search"></i>
+      <span>Descobrir</span>
+    </div>
+    <div class="nav-plus-wrap">
+      <div class="nav-plus"><i class="fas fa-plus"></i></div>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-comment-dots"></i>
+      <span>Inbox</span>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-user"></i>
+      <span>Perfil</span>
+    </div>
+  </div>
+
+<script>
+// ==========================================
+//  PERGUNTAS SOBRE TIKTOK
+// ==========================================
+const perguntas = [
+  { pergunta: "Com que frequência você abre o TikTok por dia?", opcoes: ["Mais de 10 vezes", "5 a 10 vezes", "2 a 4 vezes", "1 vez ou menos"] },
+  { pergunta: "Qual tipo de conteúdo você mais consome no TikTok?", opcoes: ["Humor/Comédia", "Danças e Coreografias", "Tutoriais e Dicas", "Notícias e Atualidades"] },
+  { pergunta: "Você já criou ou postou algum vídeo no TikTok?", opcoes: ["Sim, vários", "Sim, alguns", "Apenas 1 vez", "Nunca postei"] },
+  { pergunta: "Qual a duração média dos vídeos que você mais assiste?", opcoes: ["Menos de 15 segundos", "15 a 30 segundos", "30 a 60 segundos", "Mais de 60 segundos"] },
+  { pergunta: "Você já fez alguma compra por influência do TikTok?", opcoes: ["Sim, várias vezes", "Sim, poucas vezes", "Quase nunca", "Nunca"] },
+  { pergunta: "Qual desses recursos do TikTok você mais usa?", opcoes: ["Curtir e Compartilhar", "Salvar nos Favoritos", "Comentar", "Criar com sons"] },
+  { pergunta: "Você segue algum criador de conteúdo moçambicano no TikTok?", opcoes: ["Sim, vários", "Sim, alguns", "Apenas 1 ou 2", "Nenhum"] },
+  { pergunta: "Em que horário você mais usa o TikTok?", opcoes: ["Manhã", "Tarde", "Noite", "Madrugada"] },
+  { pergunta: "Você já usou o TikTok para aprender algo novo?", opcoes: ["Sim, frequentemente", "Sim, às vezes", "Raramente", "Nunca"] },
+  { pergunta: "Qual desses efeitos do TikTok você mais gosta?", opcoes: ["Efeitos de rosto", "Transições", "Slow motion", "Filtros de cor"] },
+  { pergunta: "Você considera o TikTok uma rede social importante?", opcoes: ["Sim, muito", "Sim, moderadamente", "Pouco importante", "Não é importante"] },
+  { pergunta: "Você já compartilhou vídeos do TikTok em outras redes?", opcoes: ["Sim, sempre", "Sim, às vezes", "Raramente", "Nunca"] },
+  { pergunta: "O que mais te atrai no TikTok?", opcoes: ["Conteúdo rápido e dinâmico", "Músicas e sons virais", "Comunidade engajada", "Algoritmo de recomendação"] },
+  { pergunta: "Você usa o TikTok para acompanhar notícias?", opcoes: ["Sim, diariamente", "Sim, ocasionalmente", "Raramente", "Nunca"] },
+  { pergunta: "Qual sua idade?", opcoes: ["Menos de 18", "18 a 24", "25 a 34", "35 ou mais"] },
+  { pergunta: "Você já participou de alguma trend ou desafio do TikTok?", opcoes: ["Sim, várias vezes", "Sim, algumas vezes", "Apenas uma vez", "Nunca participei"] },
+  { pergunta: "Com que frequência você interage com lives no TikTok?", opcoes: ["Sempre", "Às vezes", "Raramente", "Nunca"] },
+  { pergunta: "Qual dessas marcas você já viu anunciar no TikTok?", opcoes: ["Vodacom", "McDonald's", "Netflix", "Nike"] },
+  { pergunta: "Você já descobriu um artista ou música através do TikTok?", opcoes: ["Sim, muitas vezes", "Sim, algumas vezes", "Poucas vezes", "Nunca"] },
+  { pergunta: "O TikTok te influencia a experimentar novos produtos?", opcoes: ["Sim, sempre", "Sim, às vezes", "Raramente", "Nunca"] },
+  { pergunta: "Você passaria quantas horas por dia no TikTok?", opcoes: ["Menos de 1 hora", "1 a 2 horas", "2 a 3 horas", "Mais de 3 horas"] },
+  { pergunta: "Você considera o algoritmo do TikTok bom?", opcoes: ["Excelente", "Bom", "Regular", "Ruim"] },
+  { pergunta: "Você já bloqueou ou denunciou algum conteúdo no TikTok?", opcoes: ["Sim, várias vezes", "Sim, algumas vezes", "Raramente", "Nunca"] },
+  { pergunta: "Você usaria o TikTok para promover seu negócio?", opcoes: ["Sim, com certeza", "Talvez", "Não tenho certeza", "Não usaria"] },
+  { pergunta: "Qual desses países tem mais criadores que você segue?", opcoes: ["Brasil", "Estados Unidos", "Portugal", "Moçambique"] },
+  { pergunta: "Você se sente conectado à comunidade do TikTok?", opcoes: ["Sim, muito", "Sim, um pouco", "Neutro", "Não me sinto"] },
+  { pergunta: "O que você acha do TikTok para carreira de influenciador?", opcoes: ["Ótimo para começar", "Bom, mas difícil", "Muito competitivo", "Não compensa"] },
+  { pergunta: "Você já viu algum vídeo motivacional no TikTok?", opcoes: ["Sim, vários", "Sim, alguns", "Raramente", "Nunca"] },
+  { pergunta: "Você prefere vídeos legendados ou sem legenda?", opcoes: ["Com legenda sempre", "Às vezes com legenda", "Sem legenda", "Indiferente"] },
+  { pergunta: "O TikTok te ajuda a relaxar?", opcoes: ["Sim, muito", "Sim, às vezes", "Pouco", "Não"] }
+];
+
+let etapa = "inicio";
+let indiceAtual = 0;
+let respostas = new Array(perguntas.length).fill(null);
+
+function progressPercent() {
+  return ((indiceAtual + 1) / perguntas.length) * 100;
+}
+
+function updateNextButton() {
+  const btn = document.getElementById("nextBtn");
+  if (btn) {
+    const isValid = respostas[indiceAtual] !== null;
+    if (isValid) {
+      btn.classList.add("active");
+      btn.disabled = false;
+    } else {
+      btn.classList.remove("active");
+      btn.disabled = true;
+    }
+  }
+}
+
+function iniciarProcessamento() {
+  const status1 = document.getElementById("s1");
+  const status2 = document.getElementById("s2");
+  const status3 = document.getElementById("s3");
+  const status4 = document.getElementById("s4");
+  
+  setTimeout(() => {
+    if (status1) {
+      status1.classList.add("ok");
+      const rightDiv = status1.querySelector(".st-right");
+      if (rightDiv) rightDiv.innerHTML = "<i class='fas fa-check'></i>";
+    }
+  }, 500);
+  
+  setTimeout(() => {
+    if (status2) {
+      status2.classList.add("ok");
+      const rightDiv = status2.querySelector(".st-right");
+      if (rightDiv) rightDiv.innerHTML = "<i class='fas fa-check'></i>";
+    }
+  }, 1300);
+  
+  setTimeout(() => {
+    if (status3) {
+      status3.classList.add("running");
+      const rightDiv = status3.querySelector(".st-right");
+      if (rightDiv) rightDiv.innerHTML = "<i class='fas fa-sync-alt fa-spin'></i>";
+    }
+  }, 2100);
+  
+  setTimeout(() => {
+    if (status3) {
+      status3.classList.add("ok");
+      const rightDiv = status3.querySelector(".st-right");
+      if (rightDiv) rightDiv.innerHTML = "<i class='fas fa-check'></i>";
+    }
+    if (status4) {
+      status4.classList.add("ok");
+      const rightDiv = status4.querySelector(".st-right");
+      if (rightDiv) rightDiv.innerHTML = "<i class='fas fa-check'></i>";
+    }
+  }, 3200);
+  
+  setTimeout(() => {
+    etapa = "final";
+    render();
+  }, 4000);
+}
+
+function renderInicio() {
+  return `
+    <div class="page-animate">
+      <div class="u-bar">
+        <div class="u-avatar"></div>
+        <div>
+          <div class="u-name">TikTok</div>
+          <div class="u-tag">@tiktok · Pesquisa Oficial</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hero-title">Pesquisa <span class="hl">TikTok</span></div>
+        <div class="hero-subtitle">Moçambique</div>
+        <div class="hero-text">Participe desta pesquisa sobre a sua experiência no TikTok. A sua opinião é muito importante para melhorarmos!</div>
+        
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-icon"><i class="fas fa-question-circle"></i></div><div class="stat-number">30</div><div class="stat-label">Perguntas</div></div>
+          <div class="stat-box"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-number">~5</div><div class="stat-label">Minutos</div></div>
+          <div class="stat-box"><div class="stat-icon"><i class="fab fa-tiktok"></i></div><div class="stat-number">100%</div><div class="stat-label">Anônimo</div></div>
+        </div>
+
+        <button class="cta-btn" id="startBtn">
+          <i class="fas fa-play"></i> COMEÇAR PESQUISA
+        </button>
+
+        <div class="hero-footnote">
+          <i class="fas fa-check-circle"></i> Todas as respostas são anônimas e confidenciais
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderQuiz() {
+  const perguntaAtual = perguntas[indiceAtual];
+  const letrasA = ["A", "B", "C", "D"];
+  const opcoesHTML = perguntaAtual.opcoes.map((opcao, i) => {
+    const selected = respostas[indiceAtual] === i ? "selected" : "";
+    return `
+      <button class="option ${selected}" data-index="${i}">
+        <span class="option-letter">${letrasA[i]}</span>
+        <span class="option-text">${opcao}</span>
+      </button>
+    `;
+  }).join("");
+
+  return `
+    <div class="page-animate">
+      <div class="u-bar">
+        <div class="u-avatar"></div>
+        <div>
+          <div class="u-name">TikTok</div>
+          <div class="u-tag">@tiktok · Pesquisa</div>
+        </div>
+      </div>
+
+      <div class="prog-wrap">
+        <div class="prog-top">
+          <span class="prog-lbl">Pergunta ${indiceAtual + 1} de ${perguntas.length}</span>
+          <span class="prog-status">${Math.round(progressPercent())}%</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill" style="width:${progressPercent()}%"></div>
+        </div>
+      </div>
+
+      <div class="question-card">
+        <div class="q-tag"><i class="fab fa-tiktok" style="font-size:8px;"></i> TIKTOK</div>
+        <div class="question-text">${perguntaAtual.pergunta}</div>
+      </div>
+
+      <div class="options">
+        ${opcoesHTML}
+      </div>
+
+      <button class="btn-next" id="nextBtn" disabled>
+        <i class="fas fa-arrow-right"></i> ${indiceAtual === perguntas.length - 1 ? "FINALIZAR" : "PRÓXIMA"}
+      </button>
+    </div>
+  `;
+}
+
+function renderProcessing() {
+  return `
+    <div class="page-animate">
+      <div class="proc-wrap">
+        <div class="proc-ring-outer">
+          <div class="proc-ring"></div>
+          <div class="proc-ring2"></div>
+          <div class="proc-center"></div>
+        </div>
+        <div class="proc-title">A processar respostas...</div>
+        <div class="proc-sub">Por favor, aguarde um momento</div>
+        <div class="status-list">
+          <div class="st-item" id="s1"><div class="st-left"><i class="fas fa-check-circle"></i><span>Validando suas respostas...</span></div><div class="st-right"></div></div>
+          <div class="st-item" id="s2"><div class="st-left"><i class="fas fa-chart-line"></i><span>Analisando padrões de uso...</span></div><div class="st-right"></div></div>
+          <div class="st-item" id="s3"><div class="st-left"><i class="fas fa-gift"></i><span>Preparando recompensa...</span></div><div class="st-right"></div></div>
+          <div class="st-item" id="s4"><div class="st-left"><i class="fas fa-trophy"></i><span>Confirmando participação...</span></div><div class="st-right"></div></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderFinal() {
+  return `
+    <div class="page-animate">
+      <div class="u-bar">
+        <div class="u-avatar"></div>
+        <div>
+          <div class="u-name">TikTok</div>
+          <div class="u-tag">@tiktok · Pesquisa</div>
+        </div>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <div class="result-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="result-title">PARABÉNS! <span class="r">Você completou!</span></div>
+        <div class="result-sub">Obrigado por responder todas as ${perguntas.length} perguntas da pesquisa TikTok.</div>
+
+        <div class="info-box">
+          <div class="info-title"><i class="fas fa-clock"></i> Informação Importante</div>
+          <div class="info-text">As suas respostas foram recebidas com sucesso!<br />Deve esperar <strong>7 dias úteis</strong> para ter uma assistência completa.<br /><br />Enquanto aguarda, assista às aulas abaixo e pode apresentar qualquer dúvida.</div>
+        </div>
+
+        <div class="thanks-text">
+          <i class="fas fa-heart" style="color: var(--tt-red);"></i> Obrigado pela sua participação e contribuição!
+        </div>
+
+        <div class="result-buttons">
+          <a href="http://saddlebrown-alligator-900729.hostingersite.com/tiktok/347" class="btn-primary-link">
+            <i class="fas fa-money-bill-wave"></i> LEVANTAR VALOR
+          </a>
+          <a href="https://drive.google.com/drive/folders/1fKKW4LZC9rCovOhjF8bicv8ZZ0oCZJTs?usp=sharing" class="btn-secondary">
+            <i class="fas fa-download"></i> BAIXAR AULAS
+          </a>
+        </div>
+
+        <div class="footer-note">
+          <i class="fas fa-shield-alt"></i> Suas respostas são anônimas e seguras
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  const app = document.getElementById("app");
+  
+  if (etapa === "inicio") {
+    app.innerHTML = renderInicio();
+    document.getElementById("startBtn").addEventListener("click", () => { 
+      etapa = "quiz"; 
+      render(); 
+    });
+    return;
+  }
+  
+  if (etapa === "quiz") {
+    app.innerHTML = renderQuiz();
+    
+    document.querySelectorAll(".option").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const indexSelecionado = parseInt(btn.dataset.index);
+        respostas[indiceAtual] = indexSelecionado;
+        
+        document.querySelectorAll(".option").forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        updateNextButton();
+      });
+    });
+    
+    updateNextButton();
+    
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      if (respostas[indiceAtual] === null) return;
+      
+      if (indiceAtual < perguntas.length - 1) {
+        indiceAtual++;
+        render();
+      } else {
+        etapa = "processing";
+        render();
+        iniciarProcessamento();
+      }
+    });
+    return;
+  }
+  
+  if (etapa === "processing") {
+    app.innerHTML = renderProcessing();
+    return;
+  }
+  
+  if (etapa === "final") {
+    app.innerHTML = renderFinal();
+    return;
+  }
+}
+
+render();
+</script>
+</body>
+</html>
