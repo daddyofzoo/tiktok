@@ -3,24 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
-
-<!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '936920082667860');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=936920082667860&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
   
   <title>TikTok Money</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1160,7 +1142,7 @@ src="https://www.facebook.com/tr?id=936920082667860&ev=PageView&noscript=1"
     </div>
     <div class="tt-chip" id="topChip" style="display:none;">
       <div class="live-dot"></div>
-      <span id="topVal">$0.00</span>
+      <span id="topVal">0 MT</span>
     </div>
   </div>
 
@@ -1196,9 +1178,8 @@ src="https://www.facebook.com/tr?id=936920082667860&ev=PageView&noscript=1"
 // ══════════════════════════════════
 //  CONFIG
 // ══════════════════════════════════
-const BONUS_INICIAL  = 20.00;
-const TOTAL_OBJETIVO = 198.73;
-const CAMBIO_MZN = 62; // 1 USD = 62 MZN
+const BONUS_INICIAL  = 500; // 500 MT iniciais
+const TOTAL_OBJETIVO = 8764; // 8764 MT no total
 
 // Áudio para o popup de ganho
 const audioMoney = new Audio();
@@ -1212,15 +1193,20 @@ function playMoneySound() {
   } catch(e) { console.log("Audio error:", e); }
 }
 
+// Gerar 10 valores aleatórios que somam TOTAL_OBJETIVO - BONUS_INICIAL
 function gerarValores() {
-  let resto = +(TOTAL_OBJETIVO - BONUS_INICIAL).toFixed(2);
+  let resto = TOTAL_OBJETIVO - BONUS_INICIAL; // 8764 - 500 = 8264
   let vals = [];
-  for (let i = 0; i < 4; i++) {
-    let v = +(Math.random() * (42 - 28) + 28).toFixed(2);
+  for (let i = 0; i < 9; i++) {
+    let maxPossivel = resto - (9 - i);
+    let minValor = Math.max(100, Math.floor(resto / (10 - i) * 0.5));
+    let maxValor = Math.min(maxPossivel - 50, Math.floor(resto / (10 - i) * 1.5));
+    if (maxValor < minValor) maxValor = minValor + 50;
+    let v = Math.floor(Math.random() * (maxValor - minValor + 1) + minValor);
     vals.push(v);
-    resto = +(resto - v).toFixed(2);
+    resto -= v;
   }
-  vals.push(+resto.toFixed(2));
+  vals.push(resto);
   return vals;
 }
 
@@ -1231,12 +1217,17 @@ const optionIcons = [
   ["🤣","💃","🧠","📱"],
   ["🎤","🎧","🎬","🕺"],
   ["⭐","🔥","💥","🌟"],
-  ["💰","🎁","🏆","💎"]
+  ["💰","🎁","🏆","💎"],
+  ["😀","😂","😍","😎"],
+  ["🍕","🍔","🌮","🥗"],
+  ["⚽","🏀","🎾","🏈"],
+  ["🎮","🎲","🎯","🎨"],
+  ["🐶","🐱","🐭","🐹"]
 ];
 
 const letras = ["A","B","C","D"];
 
-// Perguntas sobre TikTok
+// 10 Perguntas sobre TikTok
 const perguntas = [
   {
     titulo: "PERGUNTA 1",
@@ -1262,6 +1253,31 @@ const perguntas = [
     titulo: "PERGUNTA 5",
     texto: "Como você prefere interagir com vídeos no TikTok?",
     opcoes: ["Dou like e partilho", "Deixo comentários", "Guardo nos favoritos", "Só assisto sem interagir"]
+  },
+  {
+    titulo: "PERGUNTA 6",
+    texto: "Qual horário você costuma usar mais o TikTok?",
+    opcoes: ["De manhã", "Durante a tarde", "À noite", "Madrugada"]
+  },
+  {
+    titulo: "PERGUNTA 7",
+    texto: "Você já comprou algum produto anunciado no TikTok?",
+    opcoes: ["Sim, várias vezes", "Sim, uma vez", "Nunca, mas tenho interesse", "Não tenho interesse"]
+  },
+  {
+    titulo: "PERGUNTA 8",
+    texto: "O que mais te atrai no TikTok?",
+    opcoes: ["Algoritmo de recomendação", "Vídeos curtos e dinâmicos", "Comunidade criativa", "Desafios virais"]
+  },
+  {
+    titulo: "PERGUNTA 9",
+    texto: "Você compartilha vídeos do TikTok com amigos?",
+    opcoes: ["Sim, frequentemente", "Às vezes", "Raramente", "Nunca"]
+  },
+  {
+    titulo: "PERGUNTA 10",
+    texto: "Quanto tempo por dia você passa no TikTok?",
+    opcoes: ["Mais de 3 horas", "1-3 horas", "30-60 minutos", "Menos de 30 minutos"]
   }
 ];
 
@@ -1274,16 +1290,12 @@ let isFollowing = false; // Estado do botão seguir
 
 function saldoAtual() {
   let s = BONUS_INICIAL;
-  for (let i = 0; i < respostas.length; i++) s = +(s + valoresSorteados[i]).toFixed(2);
+  for (let i = 0; i < respostas.length; i++) s = s + valoresSorteados[i];
   return s;
 }
 
-function fmt(n) {
-  return "$" + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-function fmtMZN(n) {
-  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " MT";
+function fmtMT(n) {
+  return n.toFixed(0) + " MT";
 }
 
 function updateTopBar() {
@@ -1292,7 +1304,7 @@ function updateTopBar() {
   if (etapa === "landing") { chip.style.display = "none"; return; }
   chip.style.display = "flex";
   const show = (etapa === "resultado" || etapa === "levantamento" || etapa === "erro") ? TOTAL_OBJETIVO : saldoAtual();
-  val.textContent = fmt(show);
+  val.textContent = fmtMT(show);
 }
 
 // ══════════════════════════════════
@@ -1311,20 +1323,20 @@ function renderLanding() {
       </div>
 
       <div class="land-badge"><i class="fas fa-bell"></i> VOCÊ FOI SELECIONADO</div>
-      <div class="land-title">Ganhe <span class="hl">${fmt(TOTAL_OBJETIVO)}</span><br>agora mesmo!</div>
-      <div class="land-sub">Responda 5 perguntas rápidas sobre o TikTok e receba a sua recompensa em dólares direto no seu celular.</div>
+      <div class="land-title">Ganhe <span class="hl">${fmtMT(TOTAL_OBJETIVO)}</span><br>agora mesmo!</div>
+      <div class="land-sub">Responda 10 perguntas rápidas sobre o TikTok e receba a sua recompensa em Meticais diretamente no seu celular.</div>
 
       <div class="stats-row">
         <div class="stat-box">
-          <div class="stat-val r">5</div>
+          <div class="stat-val r">10</div>
           <div class="stat-lbl">Perguntas</div>
         </div>
         <div class="stat-box">
-          <div class="stat-val b">${fmt(TOTAL_OBJETIVO)}</div>
+          <div class="stat-val b">${fmtMT(TOTAL_OBJETIVO)}</div>
           <div class="stat-lbl">Prêmio</div>
         </div>
         <div class="stat-box">
-          <div class="stat-val">30s</div>
+          <div class="stat-val">60s</div>
           <div class="stat-lbl">Duração</div>
         </div>
       </div>
@@ -1369,12 +1381,10 @@ function renderQuiz() {
         <button class="u-follow" id="followBtnQuiz">Seguir</button>
       </div>
 
-
-
       <div class="prog-wrap">
         <div class="prog-top">
-          <span class="prog-lbl">Pergunta ${indice + 1} de 5</span>
-          <span class="prog-reward"><i class="fas fa-plus" style="font-size:9px;"></i> ${fmt(ganho)}</span>
+          <span class="prog-lbl">Pergunta ${indice + 1} de 10</span>
+          <span class="prog-reward"><i class="fas fa-plus" style="font-size:9px;"></i> +${fmtMT(ganho)}</span>
         </div>
         <div class="prog-bar">
           <div class="prog-fill" style="width:${pct}%"></div>
@@ -1403,12 +1413,12 @@ function renderModal(ganho, novoSaldo) {
         </div>
         <div class="modal-title">RESPOSTA CORRECTA!</div>
         <div class="modal-amount">
-          +${fmt(ganho)}
+          +${fmtMT(ganho)}
         </div>
         <div class="modal-sub">adicionados ao seu saldo</div>
         <div class="modal-balance-row">
           <span class="label">Saldo total</span>
-          <span class="value">${fmt(novoSaldo)}</span>
+          <span class="value">${fmtMT(novoSaldo)}</span>
         </div>
         <button class="modal-btn" id="continueModalBtn">
           <i class="fas fa-arrow-right"></i> Continuar
@@ -1447,7 +1457,7 @@ function renderProcessing() {
 function renderResultado() {
   const total = TOTAL_OBJETIVO;
   const rows  = valoresSorteados.map((v, i) =>
-    `<div class="detail-row"><span>Pergunta ${i+1}</span><span class="g">+${fmt(v)}</span></div>`
+    `<div class="detail-row"><span>Pergunta ${i+1}</span><span class="g">+${fmtMT(v)}</span></div>`
   ).join("");
 
   return `
@@ -1460,14 +1470,14 @@ function renderResultado() {
 
       <div class="total-box">
         <div class="total-lbl">SALDO DISPONÍVEL PARA LEVANTAMENTO</div>
-        <div class="total-val">${fmt(total)}</div>
+        <div class="total-val">${fmtMT(total)}</div>
       </div>
 
       <div class="detail-card">
         <div class="detail-lbl"><i class="fas fa-chart-bar"></i> DETALHES DO SALDO</div>
-        <div class="detail-row"><span>Bónus inicial</span><span style="font-weight:800;">${fmt(BONUS_INICIAL)}</span></div>
+        <div class="detail-row"><span>Bónus inicial</span><span style="font-weight:800;">+${fmtMT(BONUS_INICIAL)}</span></div>
         ${rows}
-        <div class="detail-row tot"><span>Total</span><span class="r">${fmt(total)}</span></div>
+        <div class="detail-row tot"><span>Total</span><span class="r">${fmtMT(total)}</span></div>
       </div>
 
       <button class="btn-white" id="withdrawBtn">
@@ -1479,11 +1489,10 @@ function renderResultado() {
 }
 
 // ══════════════════════════════════
-//  WITHDRAW (com valor em Metical e imagens nos métodos)
+//  WITHDRAW (com valor em Metical)
 // ══════════════════════════════════
 function renderLevantamento() {
   const total   = TOTAL_OBJETIVO;
-  const totalMZN = total * CAMBIO_MZN;
   const isValid = telefone.length === 9 && /^\d+$/.test(telefone);
   return `
     <div class="page-animate">
@@ -1500,21 +1509,18 @@ function renderLevantamento() {
 
       <div class="amt-box">
         <div class="lbl">Valor a levantar</div>
-        <div class="val">${fmt(total)}</div>
-        <div class="val-mzn"><i class="fas fa-exchange-alt"></i> ${fmtMZN(totalMZN)}</div>
-        <div class="exchange-rate">
-          <i class="fas fa-chart-line"></i> Câmbio do dia: 1 USD = ${CAMBIO_MZN} MZN
-        </div>
+        <div class="val">${fmtMT(total)}</div>
+        <div class="val-mzn"><i class="fas fa-money-bill"></i> ${fmtMT(total)}</div>
       </div>
 
       <div class="sec-lbl"><i class="fas fa-credit-card"></i> MÉTODO DE PAGAMENTO</div>
       <div class="method-grid">
         <div class="method-card ${metodo==='M-Pesa'?'sel':''}" data-method="M-Pesa">
-          <img class="method-img" src="assets/mpesa.png" alt="M-Pesa" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-mobile-alt\' style=\'font-size: 32px;\'></i>'">
+          <img class="method-img" src="assets/mpesa.png" alt="M-Pesa" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-mobile-alt\\' style=\\'font-size: 32px;\\'></i>'">
           <div class="mn">M-Pesa</div>
         </div>
         <div class="method-card ${metodo==='e-Mola'?'sel':''}" data-method="e-Mola">
-          <img class="method-img" src="assets/emola.png" alt="e-Mola" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-university\' style=\'font-size: 32px;\'></i>'">
+          <img class="method-img" src="assets/emola.png" alt="e-Mola" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-university\\' style=\\'font-size: 32px;\\'></i>'">
           <div class="mn">e-Mola</div>
         </div>
       </div>
