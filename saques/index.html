@@ -306,6 +306,7 @@
       display: flex;
       gap: 12px;
       margin-bottom: 24px;
+      color: white;
     }
 
     .payment-method {
@@ -758,7 +759,7 @@
     function renderProcessing() {
       app.innerHTML = `
         <div class="card">
-          <div class="processing"><div class="processing-spinner"></div><div class="processing-text"><i class="fas fa-spinner fa-pulse"></i> Processando saque... Aguarde</div></div>
+          <div class="processing"><div class="processing-spinner"></div></div>
         </div>
       `;
       setTimeout(() => {
