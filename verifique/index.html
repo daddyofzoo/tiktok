@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover"/>
+
+  <title>TikTok Money</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --tt-red: #FE2C55;
+      --tt-red2: #ff4d6d;
+      --tt-blue: #25F4EE;
+      --tt-white: #FFFFFF;
+      --tt-black: #000000;
+      --tt-gray: #111111;
+      --tt-gray2: #1a1a1a;
+      --tt-gray3: #252525;
+      --tt-gray4: #333333;
+      --tt-muted: #7a7a7a;
+      --tt-border: rgba(255,255,255,0.07);
+      --tt-border2: rgba(255,255,255,0.12);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--tt-black);
+      min-height: 100dvh;
+      font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      color: var(--tt-white);
+      overflow-x: hidden;
+      overscroll-behavior: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TOPBAR ── */
+    .tt-topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: calc(52px + var(--safe-t));
+      padding-top: var(--safe-t);
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 16px;
+      padding-right: 16px;
+      z-index: 100;
+      border-bottom: 1px solid var(--tt-border);
+    }
+
+    .tt-logo {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .tt-logo-icon {
+      width: 26px; height: 26px;
+      position: relative;
+      margin-right: 2px;
+    }
+    .tt-logo-icon::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--tt-blue);
+      border-radius: 5px;
+      transform: translate(2px, 2px);
+      opacity: 0.7;
+    }
+    .tt-logo-icon::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--tt-red);
+      border-radius: 5px;
+      transform: translate(-2px, -2px);
+      opacity: 0.7;
+    }
+    .tt-logo-icon i {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      z-index: 1;
+    }
+
+    .tt-logo .r { color: var(--tt-red); }
+    .tt-logo .b { color: var(--tt-blue); text-shadow: -2px 0 var(--tt-red); }
+    .tt-logo .m { color: var(--tt-muted); font-size: 11px; font-weight: 600; margin-left: 1px; }
+
+    /* ── CONTEÚDO COM SCROLL ── */
+    .tt-content {
+      position: relative;
+      padding-top: calc(52px + var(--safe-t));
+      padding-bottom: calc(20px + var(--safe-b));
+      min-height: 100dvh;
+      height: 100dvh;
+      margin-top: 12px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Container principal */
+    .wrap {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Cards estilo TikTok */
+    .card {
+      background: var(--tt-gray2);
+      border: 1px solid var(--tt-border);
+      border-radius: 14px;
+      padding: 20px 18px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+      animation: fadeSlideUp 0.4s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Títulos */
+    .subtitle {
+      text-align: center;
+      color: var(--tt-muted);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      animation: fadeSlideUp 0.4s ease-out 0.05s both;
+    }
+
+    /* Card de prêmio */
+    .prizeCard {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(254,44,85,0.11), rgba(37,244,238,0.05));
+      border: 1px solid rgba(254,44,85,0.22);
+    }
+
+    .prizeCard small {
+      display: block;
+      font-weight: 800;
+      color: var(--tt-muted);
+      margin-bottom: 8px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .prizeValue {
+      font-size: 44px;
+      font-weight: 900;
+      color: var(--tt-white);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    /* Texto do vídeo */
+    .videoText {
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      margin: 8px 0 16px;
+      color: var(--tt-muted);
+    }
+
+    .videoText .hl2 {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: rgba(254,44,85,0.12);
+      border: 1px solid rgba(254,44,85,0.3);
+      color: var(--tt-red);
+      font-weight: 800;
+      font-size: 12px;
+      margin-left: 6px;
+    }
+
+    /* Card de vídeo */
+    .videoCard {
+      padding: 0;
+      background: transparent;
+      border: none;
+      overflow: hidden;
+    }
+
+    .videoFrame {
+      overflow: hidden;
+      background: var(--tt-black);
+      border-radius: 14px;
+      border: 1px solid var(--tt-border);
+    }
+
+    vturb-smartplayer {
+      display: block;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--tt-black);
+      border: none;
+    }
+
+    /* ── COMENTÁRIOS COM SCROLL ── */
+    #fb-comments {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .fb-heading {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--tt-white);
+      text-align: left;
+      padding-left: 4px;
+      animation: fadeSlideUp 0.4s ease-out 0.15s both;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fb-heading i {
+      color: var(--tt-red);
+      font-size: 18px;
+    }
+
+    .fb-heading b {
+      color: var(--tt-white);
+      font-weight: 800;
+    }
+
+    .comments-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 4px 0;
+      max-height: 500px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Scrollbar estilizada */
+    .comments-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .comments-container::-webkit-scrollbar-track {
+      background: var(--tt-gray3);
+      border-radius: 4px;
+    }
+
+    .comments-container::-webkit-scrollbar-thumb {
+      background: var(--tt-red);
+      border-radius: 4px;
+    }
+
+    .comment {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+      animation: fadeSlideUp 0.4s ease-out;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--tt-border);
+    }
+
+    .comment:last-child {
+      border-bottom: none;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--tt-red), var(--tt-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: white;
+    }
+
+    .comment-data {
+      flex: 1;
+    }
+
+    .user {
+      background: var(--tt-gray3);
+      border-radius: 14px;
+      padding: 8px 12px;
+    }
+
+    .user .name {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--tt-white);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .user .name i {
+      color: var(--tt-muted);
+      font-size: 12px;
+    }
+
+    .user .text {
+      font-size: 13px;
+      color: var(--tt-muted);
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .buttons {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 8px;
+      margin-left: 8px;
+      font-size: 12px;
+      color: var(--tt-muted);
+      font-weight: 600;
+    }
+
+    .buttons like, .buttons answer {
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--tt-muted);
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .buttons like:hover, .buttons answer:hover {
+      color: var(--tt-red);
+    }
+
+    .buttons like i, .buttons answer i {
+      font-size: 13px;
+    }
+
+    .buttons time {
+      color: var(--tt-muted);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Likes estilizados */
+    .comment likes {
+      position: absolute;
+      bottom: -4px;
+      right: 0;
+      background: var(--tt-gray3);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--tt-white);
+      padding: 3px 10px;
+      border: 1px solid var(--tt-border);
+    }
+
+    .comment likes .like-icon {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .comment likes .like-icon i {
+      color: var(--tt-red);
+      font-size: 12px;
+    }
+
+    .comments-closed {
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      margin: 16px 0 8px;
+      color: var(--tt-muted);
+      padding: 12px;
+      border-top: 1px solid var(--tt-border);
+    }
+
+    /* Responsivo mobile */
+    @media (max-width: 480px) {
+      .wrap, #fb-comments {
+        padding: 0 12px;
+      }
+
+      .card {
+        padding: 16px 14px;
+        margin-bottom: 14px;
+        border-radius: 12px;
+      }
+
+      .prizeCard {
+        padding: 18px 14px;
+      }
+
+      .prizeValue {
+        font-size: 38px;
+      }
+
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+      }
+
+      .user .text {
+        font-size: 12px;
+      }
+
+      .user {
+        padding: 8px 10px;
+      }
+
+      .user .name {
+        font-size: 12px;
+      }
+
+      .videoText {
+        font-size: 12px;
+        margin: 6px 0 14px;
+      }
+
+      .videoText .hl2 {
+        font-size: 11px;
+        padding: 3px 10px;
+      }
+
+      .buttons {
+        font-size: 11px;
+        gap: 10px;
+      }
+
+      .buttons time {
+        font-size: 10px;
+      }
+
+      .comment likes {
+        font-size: 10px;
+        padding: 2px 8px;
+      }
+
+      .comment likes .like-icon i {
+        font-size: 11px;
+      }
+
+      .comments-container {
+        max-height: 400px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .prizeValue {
+        font-size: 32px;
+      }
+      
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+      }
+      
+      .card {
+        padding: 14px 12px;
+      }
+      
+      .user .name {
+        font-size: 11px;
+      }
+      
+      .user .text {
+        font-size: 11px;
+      }
+
+      .comments-container {
+        max-height: 350px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOPBAR -->
+  <div class="tt-topbar">
+    <div class="tt-logo">
+      <div class="tt-logo-icon"><i class="fab fa-tiktok"></i></div>
+      <span class="r">Tik</span><span class="b">Tok</span>
+      <span class="m">Money</span>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO COM SCROLL -->
+  <div class="tt-content">
+    <div class="wrap">
+      <div class="subtitle">O seu prémio está pronto para sacar!</div>
+
+      <!-- CARD: PRÊMIO -->
+      <div class="card prizeCard">
+        <small><i class="fas fa-gift"></i> Valor a receber:</small>
+        <div class="prizeValue" id="totalValue">12,321 MT</div>
+      </div>
+
+      <div class="videoText">
+        Veja o vídeo abaixo para receber 
+        <span class="hl2">todo o seu valor</span>
+      </div>
+
+      <!-- CARD: VÍDEO -->
+      <div class="card videoCard">
+        <div class="videoFrame">
+          <vturb-smartplayer id="vid-6a0b68004b8de9f27a11f3c9"></vturb-smartplayer>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMENTÁRIOS COM ROLAGEM -->
+    <div id="fb-comments">
+      <div class="fb-heading">
+        <i class="fas fa-comments"></i>
+        <b>1.321 comentários</b>
+      </div>
+
+      <div class="card" style="padding: 16px 16px 12px;">
+        <div class="comments-container">
+
+          <div class="comment" data-comment-id="1">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="comment-data">
+              <div class="user">
+                <div class="name">
+                  <i class="fas fa-user-circle"></i> Carlos Silva
+                </div>
+                <p class="text">
+                  Não acreditei no início, mas respondi as 5 perguntas e já fiz 12,321 MT sem sair de casa. Pagamento caiu na minha conta em minutos! 🔥
+                </p>
+              </div>
+              <div class="buttons">
+                <like><i class="far fa-thumbs-up"></i> Curtir</like>
+                <answer><i class="far fa-comment"></i> Responder</answer>
+                <time><i class="far fa-clock"></i> 2 horas</time>
+              </div>
+            </div>
+            <likes>
+              <span class="like-icon"><i class="fas fa-heart"></i></span>
+              <span>23</span>
+            </likes>
+          </div>
+
+          <div class="comment" data-comment-id="2">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="comment-data">
+              <div class="user">
+                <div class="name">
+                  <i class="fas fa-user-circle"></i> João Santos
+                </div>
+                <p class="text">
+                  Gostei muito do sistema. As perguntas são simples e paga bem por cada resposta, Moçambique está a evoluir ❤️🙏 Recebi tudo certinho!
+                </p>
+              </div>
+              <div class="buttons">
+                <like><i class="far fa-thumbs-up"></i> Curtir</like>
+                <answer><i class="far fa-comment"></i> Responder</answer>
+                <time><i class="far fa-clock"></i> 1 hora</time>
+              </div>
+            </div>
+            <likes>
+              <span class="like-icon"><i class="fas fa-heart"></i></span>
+              <span>34</span>
+            </likes>
+          </div>
+
+          <div class="comment" data-comment-id="3">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="comment-data">
+              <div class="user">
+                <div class="name">
+                  <i class="fas fa-user-circle"></i> Miguel Costa
+                </div>
+                <p class="text">
+                  Poxa! A plataforma paga mesmo 😂❤️ recebi 12,321 MT hoje! Vocês são demais!
+                </p>
+              </div>
+              <div class="buttons">
+                <like><i class="far fa-thumbs-up"></i> Curtir</like>
+                <answer><i class="far fa-comment"></i> Responder</answer>
+                <time><i class="far fa-clock"></i> 1 hora</time>
+              </div>
+            </div>
+            <likes>
+              <span class="like-icon"><i class="fas fa-heart"></i></span>
+              <span>54</span>
+            </likes>
+          </div>
+
+          <div class="comment" data-comment-id="4">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="comment-data">
+              <div class="user">
+                <div class="name">
+                  <i class="fas fa-user-circle"></i> António Fernandes
+                </div>
+                <p class="text">
+                  Eles realmente pagam, entrou 12,321 MT na minha conta hoje! Muito profissional e rápido. Recomendo a todos! ✅
+                </p>
+              </div>
+              <div class="buttons">
+                <like><i class="far fa-thumbs-up"></i> Curtir</like>
+                <answer><i class="far fa-comment"></i> Responder</answer>
+                <time><i class="far fa-clock"></i> 19 minutos</time>
+              </div>
+            </div>
+            <likes>
+              <span class="like-icon"><i class="fas fa-heart"></i></span>
+              <span>18</span>
+            </likes>
+          </div>
+
+          <div class="comment" data-comment-id="5">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="comment-data">
+              <div class="user">
+                <div class="name">
+                  <i class="fas fa-user-circle"></i> Paulo Machava
+                </div>
+                <p class="text">
+                  Respondi todas as questões em menos de 5 minutos e recebi meu pagamento alguns minutos depois de fazer a verificação. Funciona mesmo! 💰
+                </p>
+              </div>
+              <div class="buttons">
+                <like><i class="far fa-thumbs-up"></i> Curtir</like>
+                <answer><i class="far fa-comment"></i> Responder</answer>
+                <time><i class="far fa-clock"></i> 19 minutos</time>
+              </div>
+            </div>
+            <likes>
+              <span class="like-icon"><i class="fas fa-heart"></i></span>
+              <span>21</span>
+            </likes>
+          </div>
+
+          <div class="comment" data-comment-id="6">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="comment-data">
+              <div class="user">
+                <div class="name">
+                  <i class="fas fa-user-circle"></i> Ricardo Dauto
+                </div>
+                <p class="text">
+                  Gostei muito da seriedade desta plataforma. O pagamento é bem rápido e o suporte responde na hora 🙏
+                </p>
+              </div>
+              <div class="buttons">
+                <like><i class="far fa-thumbs-up"></i> Curtir</like>
+                <answer><i class="far fa-comment"></i> Responder</answer>
+                <time><i class="far fa-clock"></i> 15 minutos</time>
+              </div>
+            </div>
+            <likes>
+              <span class="like-icon"><i class="fas fa-heart"></i></span>
+              <span>27</span>
+            </likes>
+          </div>
+
+          <div class="comments-closed">
+            <i class="fas fa-lock" style="margin-right: 6px;"></i> 
+            Esta publicação não está mais recebendo comentários
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== VTURB script (mantido) =====
+    (function(){
+      var s = document.createElement("script");
+      s.src = "https://scripts.converteai.net/715ce893-3dbb-4526-a7c4-fb95fdb74b61/players/6a0b68004b8de9f27a11f3c9/v4/player.js";
+      s.async = true;
+      document.head.appendChild(s);
+    })();
+
+    // ===== VALOR FIXO EM DÓLAR =====
+    document.getElementById("totalValue").textContent = "12,321 MT";
+  </script>
+</body>
+</html>
